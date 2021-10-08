@@ -1,7 +1,9 @@
 
 
 def main():
-    print("hello world!")
+    # TODO: implementation
+    print("TODO: server starting point implementation.")
+    pass
 
 
 if __name__ == "__main__":

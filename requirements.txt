@@ -1,0 +1,7 @@
+pyyaml
+pymongo
+fastapi
+requests
+python-dateutil
+setuptools
+wheel

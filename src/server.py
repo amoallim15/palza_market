@@ -1,10 +1,11 @@
+from fastapi import FastAPI
+from src.api import primary
+from src.api import notice
 
 
-def main():
-    # TODO: implementation
-    print("TODO: server starting point implementation.")
-    pass
+# 1. initialize the server..
+app = FastAPI()
 
-
-if __name__ == "__main__":
-    main()
+# 2. integrate routes..
+primary.main(app)
+notice.main(app)

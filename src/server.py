@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from src.api import primary
 from src.api import notice
+from src.core import utils
 
+# 1. import config
+config = utils.get_config()
+print(config)
 
-# 1. initialize the server..
+# 2. initialize the server..
 app = FastAPI()
 
-# 2. integrate routes..
+# 3. integrate routes..
 primary.main(app)
 notice.main(app)

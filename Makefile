@@ -3,6 +3,7 @@
 DEFAULT_GOAL = help
 VENV := venv
 PROJECT_NAME := palza_market
+ENVIRONMENT := DEV
 AWS_ACCOUNT_ID := master-hdh
 AWS_IAM_USERNAME := ali
 AWS_IAM_PASSWORD := Jbany159!
@@ -11,10 +12,11 @@ AWS_SECRET_ACCESS_KEY := dgE/vn0jT+5ig7qszeRTLiC3HUQil/DOuWgp4TV8
 AWS_SERVER_HOST := ec2-3-34-197-3.ap-northeast-2.compute.amazonaws.com
 AWS_SERVER_PUBLIC_IP := 3.34.197.3
 AWS_SSH_PRIVATE_KEY := ./secret/paljamarket-keypair.pem
-AWS_DOCUMENTDB_PRIVATE_KEY := ./secret/rds-combined-ca-bundle.pem
-AWS_DOCUMENTDB_USERNAME := master
-AWS_DOCUMENTDB_PASSWORD := 12345678
-AWS_DOCUMENTDB_ENDPOINT := palza-market-db.cluster-cxz5zqdhkz22.ap-northeast-2.docdb.amazonaws.com:27017
+
+LOCALHOST_MONGODB_USERNAME := master
+LOCALHOST_MONGODB_PASSWORD := 12345678
+LOCALHOST_MONGODB_ENDPOINT := localhost:27017
+LOCALHOST_MONGODB_DATABASE := palza-market
 
 help:
 	@echo "make initialize: will initialize the project environment such as (MongoDB documents, s3 images store, and server environment)."
@@ -56,14 +58,20 @@ py.clean:
 		find . -type d -name "__pycache__" -delete;
 
 run.server:
-	@uvicorn src.server:app --reload
+	@ENV=$(ENVIRONMENT) uvicorn src.server:app --reload &
 
-db.setup:
+db.install:
 	@brew tap mongodb/brew
 	@brew install mongodb-community@5.0
 	@brew services start mongodb-community@5.0
 	@brew install wget
-	@wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem -O $(AWS_DOCUMENTDB_PRIVATE_KEY)
 
 db.connect:
-	@mongo --ssl --host $(AWS_DOCUMENTDB_ENDPOINT) --sslCAFile $(AWS_DOCUMENTDB_PRIVATE_KEY) --username $(AWS_DOCUMENTDB_USERNAME) --password $(AWS_DOCUMENTDB_PASSWORD)
+	@mongo --host $(LOCALHOST_MONGODB_ENDPOINT)  --username $(LOCALHOST_MONGODB_USERNAME) --password $(LOCALHOST_MONGODB_PASSWORD) --authenticationDatabase $(LOCALHOST_MONGODB_DATABASE)
+
+db.setup:
+	@use mongo
+	@use $(LOCALHOST_MONGODB_DATABASE)
+	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "$(LOCALHOST_MONGODB_DATABASE)" }, { role: "read", db: "reporting" }] })
+# 	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "palza-market" }, { role: "read", db: "reporting" }] })
+	

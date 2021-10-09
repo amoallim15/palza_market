@@ -4,4 +4,4 @@
 def main(app):
     @app.get("/")
     def index():
-        return { "status": "OK" }
+        return {"status": "OK"}

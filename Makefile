@@ -10,8 +10,8 @@ AWS_ACCESS_KEY_ID := AKIAW7OMABNVE2ZGIP6J
 AWS_SECRET_ACCESS_KEY := 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
 AWS_SERVER_HOST := ec2-3-34-197-3.ap-northeast-2.compute.amazonaws.com
 AWS_SERVER_PUBLIC_IP := 3.34.197.3
-AWS_SSH_PRIVATE_KEY := secret/paljamarket-keypair.pem
-AWS_DOCUMENTDB_PRIVATE_KEY := secret/rds-combined-ca-bundle.pem
+AWS_SSH_PRIVATE_KEY := ./secret/paljamarket-keypair.pem
+AWS_DOCUMENTDB_PRIVATE_KEY := ./secret/rds-combined-ca-bundle.pem
 AWS_DOCUMENTDB_USERNAME := master
 AWS_DOCUMENTDB_PASSWORD := 12345678
 AWS_DOCUMENTDB_ENDPOINT := palza-market-db.cluster-cxz5zqdhkz22.ap-northeast-2.docdb.amazonaws.com:27017
@@ -26,9 +26,9 @@ ssh:
 	# ssh -i "paljamarket-keypair.pem" ubuntu@ec2-3-34-197-3.ap-northeast-2.compute.amazonaws.com
 	@ ssh -i $(AWS_SSH_PRIVATE_KEY) ubuntu@$(AWS_SERVER_HOST)
 
-nginx.install.ubuntu:
-	@sudo apt-get update
-	@sudo apt-get install nginx -y
+# nginx.install.ubuntu:
+# 	@sudo apt-get update
+# 	@sudo apt-get install nginx -y
 
 nginx.install.mac:
 	@brew update
@@ -59,8 +59,11 @@ run.server:
 	@uvicorn src.server:app --reload
 
 db.setup:
+	@brew tap mongodb/brew
+	@brew install mongodb-community@5.0
+	@brew services start mongodb-community@5.0
 	@brew install wget
-	@wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem -O ./secret/rds-combined-ca-bundle.pem
+	@wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem -O $(AWS_DOCUMENTDB_PRIVATE_KEY)
 
 db.connect:
-	@mongo --ssl --host $(AWS_DOCUMENTDB_ENDPOINT) --sslCAFile rds-combined-ca-bundle.pem --username $(AWS_DOCUMENTDB_USERNAME) --password $(AWS_DOCUMENTDB_PASSWORD)
+	@mongo --ssl --host $(AWS_DOCUMENTDB_ENDPOINT) --sslCAFile $(AWS_DOCUMENTDB_PRIVATE_KEY) --username $(AWS_DOCUMENTDB_USERNAME) --password $(AWS_DOCUMENTDB_PASSWORD)

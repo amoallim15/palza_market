@@ -1,7 +1,7 @@
 # Copy files..
 sudo rm -rf project
-mkdir project
-unzip project.zip -d ./project/
+sudo mkdir project
+sudo unzip project.zip -d ./project/
 
 # Navigate to project folder..
 cd ./project
@@ -9,9 +9,6 @@ cd ./project
 # Install dependencies..
 sudo make py.setup;
 
-# Update supervisord config
-sudo cp /home/ubuntu/project/src/config/palza_market.conf /etc/supervisor/conf.d/palza_market.conf
-
-# Restart supervisord..
-sudo systemctl restart supervisord.service
-sudo systemctl status supervisord.service
+# Restart the project..
+sudo systemctl restart palza_market.service
+sudo systemctl status palza_market.service

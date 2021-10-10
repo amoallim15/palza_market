@@ -6,43 +6,29 @@ sudo apt-get install -y python3
 sudo apt-get install -y python3-pip
 sudo apt-get install -y python3-setuptools
 sudo apt-get install -y python3-venv
-sudo apt-get install -y supervisor 
+# sudo apt-get install -y nginx
 
-# Prepare supervisord..
-sudo rm -rf /etc/supervisor
-sudo mkdir /etc/supervisor
-sudo mkdir /etc/supervisor/conf.d
-sudo echo_supervisord_conf | sudo tee /etc/supervisor/supervisord.conf
-sudo tee -a /etc/supervisor/supervisord.conf <<EOF
-[include]
-files=conf.d/*.conf
-EOF
 
-# Prepare systemctl..
-sudo rm /etc/systemd/system/supervisord.service
-sudo tee /etc/systemd/system/supervisord.service <<EOF
+sudo tee /etc/systemd/system/palza_market.service <<EOF
 [Unit]
-Description=Supervisor daemon
-Documentation=http://supervisord.org
+Description=Palza Market
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
-ExecStop=/usr/bin/supervisorctl $OPTIONS shutdown
-ExecReload=/usr/bin/supervisorctl $OPTIONS reload
+ExecStart=/bin/bash -c 'source /home/ubuntu/project/venv/bin/activate && gunicorn -k uvicorn.workers.UvicornWorker src.server:app -w 4 --bind 0.0.0.0:8080'
 KillMode=process
 Restart=on-failure
 RestartSec=42s
 User=ubuntu
+Environment="ENV=PROD"
+WorkingDirectory=/home/ubuntu/project
 
 [Install]
 WantedBy=multi-user.target
-Alias=supervisord.service
 EOF
 
-# Restart supervisord..
 sudo systemctl daemon-reload
-sudo systemctl unmask supervisord.service
-sudo systemctl enable supervisord.service
-sudo systemctl restart supervisord.service
-sudo systemctl status supervisord.service
+sudo systemctl unmask palza_market.service
+sudo systemctl enable palza_market.service
+sudo systemctl restart palza_market.service
+sudo systemctl status palza_market.service

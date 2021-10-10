@@ -9,3 +9,4 @@ boto3
 uvicorn[standard]
 pydantic
 supervisor
+gunicorn

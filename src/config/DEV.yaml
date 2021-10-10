@@ -5,7 +5,7 @@ IMAGE_STORE_DIR_CONFIG:
   website: /website
 
 IMAGE_STORE_CONFIG:
-  host: http://palza-market-image-store.s3-website.ap-northeast-2.amazonaws.com
+  host: http://palza-market-image-store-dev.s3-website.ap-northeast-2.amazonaws.com
 
 DATABASE_CONFIG:
   protocol: mongodb

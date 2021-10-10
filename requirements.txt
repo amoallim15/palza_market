@@ -8,3 +8,4 @@ wheel
 boto3
 uvicorn[standard]
 pydantic
+supervisor

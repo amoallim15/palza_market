@@ -5,7 +5,6 @@ from src.core import utils
 
 # 1. import config
 config = utils.get_config()
-print(config)
 
 # 2. initialize the server..
 app = FastAPI()

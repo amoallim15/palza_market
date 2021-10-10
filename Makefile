@@ -3,14 +3,12 @@
 DEFAULT_GOAL = help
 VENV := venv
 PROJECT_NAME := palza_market
-ENVIRONMENT := DEV
 AWS_ACCOUNT_ID := master-hdh
 AWS_IAM_USERNAME := ali
 AWS_IAM_PASSWORD := Jbany159!
 AWS_ACCESS_KEY_ID := AKIAW7OMABNVE2ZGIP6J
 AWS_SECRET_ACCESS_KEY := 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
-AWS_SERVER_HOST := ec2-3-34-197-3.ap-northeast-2.compute.amazonaws.com
-AWS_SERVER_PUBLIC_IP := 3.34.197.3
+AWS_SERVER_PUBLIC_IP := 13.125.147.119
 AWS_SSH_PRIVATE_KEY := ./secret/paljamarket-keypair.pem
 
 LOCALHOST_MONGODB_USERNAME := master
@@ -23,18 +21,21 @@ help:
 	@echo "make server: 	will run the server."
 	@echo "make crontab:    will run the crontab job to collect the realstate data from the government api."
 
-ssh:
-	# ssh -i "paljamarket-keypair.pem" ubuntu@3.34.197.3
-	# ssh -i "paljamarket-keypair.pem" ubuntu@ec2-3-34-197-3.ap-northeast-2.compute.amazonaws.com
-	@ ssh -i $(AWS_SSH_PRIVATE_KEY) ubuntu@$(AWS_SERVER_HOST)
+proj.initialize:
+	@brew install zip -y
+	@brew install unzip -y
+	@brew install wget -y
 
-# nginx.install.ubuntu:
-# 	@sudo apt-get update
-# 	@sudo apt-get install nginx -y
+ssh.access:
+	# ssh -i "paljamarket-keypair.pem" ubuntu@13.125.147.119
+	@ssh -i $(AWS_SSH_PRIVATE_KEY) ubuntu@$(AWS_SERVER_PUBLIC_IP)
 
-nginx.install.mac:
-	@brew update
-	@brew install nginx -y
+ssh.upload:
+	@zip --exclude=*venv* --exclude=*.git* -r project.zip ./ 
+	@scp -i $(AWS_SSH_PRIVATE_KEY) project.zip ubuntu@$(AWS_SERVER_PUBLIC_IP):project.zip
+	@scp -i $(AWS_SSH_PRIVATE_KEY) ./src/scripts/setup.sh ubuntu@$(AWS_SERVER_PUBLIC_IP):setup.sh
+	@scp -i $(AWS_SSH_PRIVATE_KEY) ./src/scripts/refresh.sh ubuntu@$(AWS_SERVER_PUBLIC_IP):refresh.sh
+	@rm project.zip
 
 py.setup:
 	@python3 -m venv $(VENV)
@@ -58,13 +59,12 @@ py.clean:
 		find . -type d -name "__pycache__" -delete;
 
 run.server:
-	@ENV=$(ENVIRONMENT) uvicorn src.server:app --reload &
+	@ENV=DEV uvicorn src.server:app --reload --host 0.0.0.0 &
 
 db.install:
 	@brew tap mongodb/brew
 	@brew install mongodb-community@5.0
 	@brew services start mongodb-community@5.0
-	@brew install wget
 
 db.connect:
 	@mongo --host $(LOCALHOST_MONGODB_ENDPOINT)  --username $(LOCALHOST_MONGODB_USERNAME) --password $(LOCALHOST_MONGODB_PASSWORD) --authenticationDatabase $(LOCALHOST_MONGODB_DATABASE)
@@ -74,4 +74,3 @@ db.setup:
 	@use $(LOCALHOST_MONGODB_DATABASE)
 	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "$(LOCALHOST_MONGODB_DATABASE)" }, { role: "read", db: "reporting" }] })
 # 	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "palza-market" }, { role: "read", db: "reporting" }] })
-	

@@ -139,4 +139,5 @@ cython_debug/
 
 # Others
 secret/
-object_store/
+.DS_Store
+project.zip

@@ -1,8 +1,9 @@
 IMAGE_STORE_DIR_CONFIG:
-  temporary: /temporary
-  realstate: /realstate
-  community: /community
-  website: /website
+  temporary: temporary
+  realstate: realstate
+  home_page: home_page
+  notice: notice
+  others: others
 
 IMAGE_STORE_CONFIG:
   host: http://palza-market-image-store-dev.s3-website.ap-northeast-2.amazonaws.com

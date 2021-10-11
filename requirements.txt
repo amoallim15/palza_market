@@ -11,4 +11,3 @@ pydantic
 supervisor
 gunicorn
 motor
-pymongo[srv]

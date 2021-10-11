@@ -14,7 +14,7 @@ AWS_SSH_PRIVATE_KEY := ./secret/paljamarket-keypair.pem
 LOCALHOST_MONGODB_USERNAME := master
 LOCALHOST_MONGODB_PASSWORD := 12345678
 LOCALHOST_MONGODB_ENDPOINT := localhost:27017
-LOCALHOST_MONGODB_DATABASE := palza-market
+LOCALHOST_MONGODB_DATABASE := palza_market
 
 help:
 	@echo "make initialize: will initialize the project environment such as (MongoDB documents, s3 images store, and server environment)."
@@ -66,14 +66,8 @@ db.install:
 	@brew install mongodb-community@5.0
 	@brew services start mongodb-community@5.0
 
-db.connect:
-	@mongo --host $(LOCALHOST_MONGODB_ENDPOINT)  --username $(LOCALHOST_MONGODB_USERNAME) --password $(LOCALHOST_MONGODB_PASSWORD) --authenticationDatabase $(LOCALHOST_MONGODB_DATABASE)
-
 db.setup:
-	@ENV=DEV python3 -m src.scripts.storage_setup
+	@mongo --eval "db.getSiblingDB('$(LOCALHOST_MONGODB_DATABASE)').createUser({user: '$(LOCALHOST_MONGODB_USERNAME)', pwd: '$(LOCALHOST_MONGODB_PASSWORD)', roles: [{ role: 'readWrite', db: '$(LOCALHOST_MONGODB_DATABASE)' }, { role: 'read', db: 'reporting' }] })"
 
-# db.setup:
-# 	@use mongo
-# 	@use $(LOCALHOST_MONGODB_DATABASE)
-# 	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "$(LOCALHOST_MONGODB_DATABASE)" }, { role: "read", db: "reporting" }] })
-# 	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "palza-market" }, { role: "read", db: "reporting" }] })
+db.connect:
+	@mongo --host $(LOCALHOST_MONGODB_ENDPOINT) --username $(LOCALHOST_MONGODB_USERNAME) --password $(LOCALHOST_MONGODB_PASSWORD) --authenticationDatabase $(LOCALHOST_MONGODB_DATABASE)

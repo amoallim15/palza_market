@@ -1,4 +1,5 @@
 from src.models.api_models import Notice
+from uuid import UUID
 
 
 def main(app):
@@ -13,11 +14,11 @@ def main(app):
         pass
 
     @app.put("/notice/{notice_id}")
-    def update_notice(notice_id: str, notice: Notice):
+    def update_notice(notice_id: UUID, notice: Notice):
         # TODO: update notice
         pass
 
     @app.delete("/notice/{notice_id}")
-    def delete_notice(notice_id: str, notice: Notice):
+    def delete_notice(notice_id: UUID, notice: Notice):
         # TODO: delete notice
         pass

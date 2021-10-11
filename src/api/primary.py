@@ -2,6 +2,6 @@
 
 
 def main(app):
-    @app.get("/")
-    def index():
+    @app.get("/health")
+    def health_check():
         return {"status": "OK"}

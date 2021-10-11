@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from src.api import (
-    primary,
+    others,
     notice,
     realstate,
     report,
@@ -9,6 +9,7 @@ from src.api import (
     review,
     search,
     image,
+    sms,
 )
 from src.core import utils
 
@@ -19,12 +20,13 @@ config = utils.get_config()
 app = FastAPI()
 
 # 3. integrate routes..
-primary.main(app)
-notice.main(app)
-realstate.main(app)
-report.main(app)
 auth.main(app)
 home_page.main(app)
-review.main(app)
+realstate.main(app)
 search.main(app)
+review.main(app)
+notice.main(app)
+report.main(app)
 image.main(app)
+sms.main(app)
+others.main(app)

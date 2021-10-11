@@ -1,24 +1,24 @@
-from src.models.api_models import Review, Realstate
-from uuid import UUID
+from fastapi import Body
+from src.models.review import CreateReviewModel, UpdateReviewModel
 
 
 def main(app):
     @app.get("/review/{realstate_id}")
-    def reviews(realstate_id: UUID, realstate: Realstate):
-        # TODO: get reviews from the database of realstate
+    def reviews(realstate_id: str):
+        # TODO:
         pass
 
     @app.post("/review/{realstate_id}")
-    def create_review(realstate_id: UUID, realstate: Realstate):
-        # TODO: post new review
+    def create_review(realstate_id: str, review: CreateReviewModel = Body(...)):
+        # TODO:
         pass
 
     @app.put("/review/{review_id}")
-    def update_review(review_id: UUID, review: Review):
-        # TODO: update review
+    def update_review(review_id: str, review: UpdateReviewModel = Body(...)):
+        # TODO:
         pass
 
     @app.delete("/review/{review_id}")
-    def delete_review(review_id: UUID, review: Review):
-        # TODO: delete review
+    def delete_review(review_id: str):
+        # TODO:
         pass

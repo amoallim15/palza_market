@@ -10,7 +10,6 @@ AWS_ACCESS_KEY_ID := AKIAW7OMABNVE2ZGIP6J
 AWS_SECRET_ACCESS_KEY := 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
 AWS_SERVER_PUBLIC_IP := 13.125.147.119
 AWS_SSH_PRIVATE_KEY := ./secret/paljamarket-keypair.pem
-
 LOCALHOST_MONGODB_USERNAME := master
 LOCALHOST_MONGODB_PASSWORD := 12345678
 LOCALHOST_MONGODB_ENDPOINT := localhost:27017
@@ -22,9 +21,9 @@ help:
 	@echo "make crontab:    will run the crontab job to collect the realstate data from the government api."
 
 proj.initialize:
-	@brew install zip -y
-	@brew install unzip -y
-	@brew install wget -y
+	@brew install -y zip
+	@brew install -y unzip
+	@brew install -y wget
 
 ssh.access:
 	# ssh -i "paljamarket-keypair.pem" ubuntu@13.125.147.119

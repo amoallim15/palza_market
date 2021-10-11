@@ -8,6 +8,7 @@ wheel
 boto3
 uvicorn[standard]
 pydantic
+pydantic[email]
 supervisor
 gunicorn
 motor

@@ -17,3 +17,9 @@ class UserMethod(enum.Enum):
     KAKAO = 2
     NAVER = 3
     GOOGLE = 4
+
+
+class CrontabStatus(enum.Enum):
+    RUNNING = 1
+    SUCCEEDED = 2
+    FAILED = 3

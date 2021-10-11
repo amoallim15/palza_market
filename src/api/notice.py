@@ -1,24 +1,32 @@
-from src.models.api_models import Notice
-from uuid import UUID
+from fastapi import Body
+from src.models.notice import (
+    CreateNoticeModel,
+    UpdateNoticeModel,
+)
 
 
 def main(app):
     @app.get("/notice")
     def notices():
-        # TODO: get notices from the database
+        # TODO:
+        pass
+
+    @app.get("/notice/{notice_id}")
+    def get_notice(notice_id: str):
+        # TODO:
         pass
 
     @app.post("/notice")
-    def create_notice():
-        # TODO: post new notice
+    def create_notice(notice: CreateNoticeModel = Body(...)):
+        # TODO:
         pass
 
     @app.put("/notice/{notice_id}")
-    def update_notice(notice_id: UUID, notice: Notice):
-        # TODO: update notice
+    def update_notice(notice_id: str, notice: UpdateNoticeModel = Body(...)):
+        # TODO:
         pass
 
     @app.delete("/notice/{notice_id}")
-    def delete_notice(notice_id: UUID, notice: Notice):
-        # TODO: delete notice
+    def delete_notice(notice_id: str):
+        # TODO:
         pass

@@ -31,8 +31,4 @@ class ControlUserStateModel(UpdateModel):
 class AuthenticateUserModel(BaseModel):
     username: str = Field(...)
     password: str = Field(...)
-    method: UserMethod = Field(...)
-
-
-class UserTokenModel(CreateModel):
-    pass
+    method: Optional[UserMethod]

@@ -12,21 +12,30 @@ from src.api import (
     sms,
 )
 from src.core import utils
+from src.core.storage import MongoStore, ObjectStore
+from src.plugins import authorization
 
-# 1. import config..
-config = utils.get_config()
 
-# 2. initialize the server..
+# 1. initialize the server..
 app = FastAPI(
     title="Palza Market",
-    version="0.4.7",
+    version="0.4.8",
     contact={
         "name": "Ali Moallim",
         "email": "moallim15@gmail.com",
-    }
+    },
 )
 
-# 3. integrate routes..
+# 2. integrate initial configuration..
+app.config = config = utils.get_config()
+#
+app.db = MongoStore(**config["DATABASE_CONFIG"]).connect()
+app.imgs = ObjectStore(**config["IMAGE_STORE_CONFIG"]).connect()
+
+# 3. integrate plugins..
+authorization.main(app, authentication_url="auth")
+
+# 4. integrate routes..
 auth.main(app)
 home_page.main(app)
 realstate.main(app)

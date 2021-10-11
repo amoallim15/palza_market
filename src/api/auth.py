@@ -1,15 +1,15 @@
-from fastapi import Body
+from fastapi import Body, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from src.models.user import (
     CreateUserModel,
     UpdateUserModel,
     ControlUserStateModel,
-    AuthenticateUserModel,
 )
 
 
 def main(app):
     @app.get("/user")
-    def users():
+    def users(token: str = Depends(app.token)):
         # TODO:
         pass
 
@@ -34,6 +34,7 @@ def main(app):
         pass
 
     @app.post("/auth")
-    def authenticate_user(user: AuthenticateUserModel = Body(...)):
+    def authenticate_user(user_form: OAuth2PasswordRequestForm = Depends()):
+        print(user_form.username, user_form.password)
         # TODO:
         pass

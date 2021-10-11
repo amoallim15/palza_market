@@ -19,7 +19,7 @@ from src.plugins import authorization
 # 1. initialize the server..
 app = FastAPI(
     title="Palza Market",
-    version="0.4.9",
+    version="0.4.11",
     contact={
         "name": "Ali Moallim",
         "email": "moallim15@gmail.com",

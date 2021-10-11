@@ -29,4 +29,4 @@ class Secret:
             payload = jwt.decode(token, self.key, algorithm=[self.algorithm])
             return payload
         except JWTError:
-            raise None
+            return None

@@ -1,9 +1,4 @@
 def main(app):
-    @app.post("/crontab")
-    def crontab():
-        # TODO:
-        pass
-
     @app.get("/crontab")
     def crontabs():
         # TODO:
@@ -11,6 +6,11 @@ def main(app):
 
     @app.get("/crontab/{crontab_id}")
     def get_crontab(crontab_id: str):
+        # TODO:
+        pass
+
+    @app.post("/crontab")
+    def crontab():
         # TODO:
         pass
 

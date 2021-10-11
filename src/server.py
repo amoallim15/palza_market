@@ -19,7 +19,7 @@ from src.plugins import authorization
 # 1. initialize the server..
 app = FastAPI(
     title="Palza Market",
-    version="0.4.11",
+    version="0.4.12",
     contact={
         "name": "Ali Moallim",
         "email": "moallim15@gmail.com",
@@ -30,7 +30,7 @@ app = FastAPI(
 app.config = config = utils.get_config()
 #
 app.db = MongoStore(**config["DATABASE_CONFIG"]).connect()
-app.imgs = ObjectStore(**config["IMAGE_STORE_CONFIG"]).connect()
+app.s3 = ObjectStore(**config["IMAGE_STORE_CONFIG"]).connect()
 
 # 3. integrate plugins..
 authorization.main(app, authentication_url="auth")

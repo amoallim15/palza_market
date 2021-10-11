@@ -70,7 +70,10 @@ db.connect:
 	@mongo --host $(LOCALHOST_MONGODB_ENDPOINT)  --username $(LOCALHOST_MONGODB_USERNAME) --password $(LOCALHOST_MONGODB_PASSWORD) --authenticationDatabase $(LOCALHOST_MONGODB_DATABASE)
 
 db.setup:
-	@use mongo
-	@use $(LOCALHOST_MONGODB_DATABASE)
-	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "$(LOCALHOST_MONGODB_DATABASE)" }, { role: "read", db: "reporting" }] })
+	@ENV=DEV python3 -m src.scripts.storage_setup
+
+# db.setup:
+# 	@use mongo
+# 	@use $(LOCALHOST_MONGODB_DATABASE)
+# 	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "$(LOCALHOST_MONGODB_DATABASE)" }, { role: "read", db: "reporting" }] })
 # 	@db.createUser({ user: "master", pwd: "12345678", roles: [{ role: "readWrite", db: "palza-market" }, { role: "read", db: "reporting" }] })

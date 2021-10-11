@@ -1,19 +1,20 @@
 IMAGE_STORE_DIR_CONFIG:
-  temporary: /tmp
+  temporary: /temporary
   realstate: /realstate
   community: /community
   website: /website
 
 IMAGE_STORE_CONFIG:
-  host: http://palza-market-image-store.s3-website.ap-northeast-2.amazonaws.com
+  host: http://palza-market-image-store-dev.s3-website.ap-northeast-2.amazonaws.com
+  bucket: palza-market-image-store
+  aws_access_key_id: AKIAW7OMABNVE2ZGIP6J
+  aws_secret_access_key: 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
+  aws_region: ap-northeast-2
 
 DATABASE_CONFIG:
   protocol: mongodb
-  endpoint: palza-market-db.cluster-cxz5zqdhkz22.ap-northeast-2.docdb.amazonaws.com:27017
+  host: palza-market-db.cluster-cxz5zqdhkz22.ap-northeast-2.docdb.amazonaws.com
+  port: 27017
   username: master
   password: 12345678
   database: palza-market
-  config:
-    replicaSet: rs0
-    readPreference: secondaryPreferred
-    retryWrites: false

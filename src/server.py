@@ -12,7 +12,7 @@ from src.api import (
 )
 from src.core import utils
 
-# 1. import config
+# 1. import config..
 config = utils.get_config()
 
 # 2. initialize the server..

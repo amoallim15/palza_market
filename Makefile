@@ -70,3 +70,6 @@ db.setup:
 
 db.connect:
 	@mongo --host $(LOCALHOST_MONGODB_ENDPOINT) --username $(LOCALHOST_MONGODB_USERNAME) --password $(LOCALHOST_MONGODB_PASSWORD) --authenticationDatabase $(LOCALHOST_MONGODB_DATABASE)
+
+ssl.secret:
+	@openssl rand -hex 32

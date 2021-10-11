@@ -17,7 +17,14 @@ from src.core import utils
 config = utils.get_config()
 
 # 2. initialize the server..
-app = FastAPI()
+app = FastAPI(
+    title="Palza Market",
+    version="0.4.7",
+    contact={
+        "name": "Ali Moallim",
+        "email": "moallim15@gmail.com",
+    }
+)
 
 # 3. integrate routes..
 auth.main(app)

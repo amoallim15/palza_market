@@ -1,25 +1,25 @@
 import enum
 
 
-class UserType(enum.Enum):
-    AGENCY = 1
-    INDIVIDUAL = 2
+class UserType(str, enum.Enum):
+    AGENCY = "AGENCY"
+    INDIVIDUAL = "INDIVIDUAL"
 
 
-class UserRole(enum.Enum):
-    ADMIN = 1
-    EMPLOYEE = 2
-    NORMAL = 3
+class UserRole(str, enum.Enum):
+    ADMIN = "ADMIN"
+    EMPLOYEE = "EMPLOYEE"
+    CLIENT = "CLIENT"
 
 
-class UserMethod(enum.Enum):
-    EMAIL = 1
-    KAKAO = 2
-    NAVER = 3
-    GOOGLE = 4
+class UserMethod(str, enum.Enum):
+    EMAIL = "EMAIL"
+    KAKAO = "KAKAO"
+    NAVER = "NAVER"
+    GOOGLE = "GOOGLE"
 
 
-class CrontabStatus(enum.Enum):
-    RUNNING = 1
-    SUCCEEDED = 2
-    FAILED = 3
+class CrontabStatus(str, enum.Enum):
+    RUNNING = "RUNNING"
+    SUCCEEDED = "SUCCEEDED"
+    FAILED = "FAILED"

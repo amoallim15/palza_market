@@ -4,6 +4,6 @@
 
 def main(app):
     @app.get("/search")
-    def search():
+    def search(keyword: str, lng: int = 0, lat: int = 0, area: str = ""):
         # TODO:
         pass

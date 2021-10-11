@@ -12,3 +12,4 @@ pydantic[email]
 supervisor
 gunicorn
 motor
+python-jose

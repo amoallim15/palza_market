@@ -1,10 +1,8 @@
+wheel
 pyyaml
 pymongo
 fastapi
 requests
-python-dateutil
-setuptools
-wheel
 boto3
 uvicorn[standard]
 pydantic[email]

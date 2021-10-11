@@ -1,10 +1,9 @@
-from fastapi import Body
-from src.models.image import CreateImageModel
+from fastapi import File, UploadFile
 
 
 def main(app):
     @app.post("/image/temporary")
-    def create_temporary_image(image: CreateImageModel = Body(...)):
+    def create_temporary_image(image: UploadFile = File(...)):
         # TODO:
         pass
 

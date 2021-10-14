@@ -4,7 +4,7 @@ from fastapi import Body, Depends
 from src.models.user import (
     CreateUserModel,
     UpdateUserModel,
-    ControlUserStateModel,
+    PatchUserModel,
     AuthenticateUserModel,
 )
 
@@ -31,7 +31,7 @@ def main(app):
         pass
 
     @app.patch("/user/{user_id}")
-    def control_user_state(user_id: str, user: ControlUserStateModel = Body(...)):
+    def patch_user(user_id: str, user: PatchUserModel = Body(...)):
         # TODO:
         pass
 

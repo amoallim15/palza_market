@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import Field, HttpUrl
 from src.core.model import CreateModel, UpdateModel
 from typing import List, Optional
 
@@ -17,6 +17,5 @@ class UpdateRealstateModel(UpdateModel):
     lat: int = Field(...)
 
 
-class PatchRealstateModel(BaseModel):
+class PatchRealstateModel(UpdateModel):
     is_approved: Optional[bool]
-    is_liked: Optional[bool]

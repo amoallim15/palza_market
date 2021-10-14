@@ -23,3 +23,8 @@ class CrontabStatus(str, enum.Enum):
     RUNNING = "RUNNING"
     SUCCEEDED = "SUCCEEDED"
     FAILED = "FAILED"
+
+
+class BannerLocation(str, enum.Enum):
+    HOME_PAGE = "HOME_PAGE"
+    SEARCH_PAGE = "SEARCH_PAGE"

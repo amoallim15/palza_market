@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import Field, EmailStr
 from src.core.model import CreateModel, UpdateModel
 from src.core.enums import UserRole, UserType, UserMethod
 from typing import Optional
@@ -23,12 +23,12 @@ class UpdateUserModel(UpdateModel):
     display_name: str = Field(...)
 
 
-class ControlUserStateModel(UpdateModel):
-    user_role: Optional[UserRole]
-    user_state: Optional[bool]
-
-
-class AuthenticateUserModel(BaseModel):
+class AuthenticateUserModel(UpdateModel):
     username: str = Field(...)
     password: str = Field(...)
     method: Optional[UserMethod]
+
+
+class PatchUserModel(UpdateModel):
+    user_role: Optional[UserRole]
+    is_approved: Optional[bool]

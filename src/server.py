@@ -10,6 +10,8 @@ from src.api import (
     search,
     image,
     sms,
+    banner,
+    wishlist,
 )
 from src.core import utils
 from src.core.storage import MongoStore, ObjectStore
@@ -39,10 +41,12 @@ authorization.main(app, authentication_url="auth")
 auth.main(app)
 home_page.main(app)
 realstate.main(app)
+wishlist.main(app)
 search.main(app)
 review.main(app)
 notice.main(app)
 report.main(app)
+banner.main(app)
 image.main(app)
 sms.main(app)
 others.main(app)

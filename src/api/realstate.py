@@ -34,12 +34,7 @@ def main(app):
         # TODO:
         pass
 
-    @app.patch("/like/{realstate_id}")
-    def like(realstate_id: str, realstate: PatchRealstateModel):
-        # TODO: toggle realstate like
-        pass
-
-    @app.patch("/approve/{realstate_id}")
-    def approve(realstate_id: str, realstate: PatchRealstateModel):
+    @app.patch("/realstate/{realstate_id}")
+    def patch_realstate(realstate_id: str, realstate: PatchRealstateModel = Body(...)):
         # TODO: approve realstate
         pass

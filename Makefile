@@ -57,7 +57,7 @@ py.clean:
 		find . -type f -name "*.py[co]" -delete; \
 		find . -type d -name "__pycache__" -delete;
 
-run.server:
+py.run:
 	@ENV=DEV uvicorn src.server:app --reload --host 0.0.0.0 &
 
 db.install:

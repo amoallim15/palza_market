@@ -4,7 +4,7 @@ from src.api import (
     notice,
     realstate,
     report,
-    auth,
+    user,
     home_page,
     review,
     search,
@@ -12,6 +12,8 @@ from src.api import (
     sms,
     banner,
     wishlist,
+    magazine,
+    franchise,
 )
 from src.core import utils
 from src.core.storage import MongoStore, ObjectStore
@@ -38,7 +40,7 @@ app.s3 = ObjectStore(**config["IMAGE_STORE_CONFIG"]).connect()
 authorization.main(app, authentication_url="auth")
 
 # 4. integrate routes..
-auth.main(app)
+user.main(app)
 home_page.main(app)
 realstate.main(app)
 wishlist.main(app)
@@ -47,6 +49,8 @@ review.main(app)
 notice.main(app)
 report.main(app)
 banner.main(app)
+magazine.main(app)
+franchise.main(app)
 image.main(app)
 sms.main(app)
 others.main(app)

@@ -12,6 +12,11 @@ class CreateUserModel(CreateModel):
     email: EmailStr = Field(...)
     phone_no: str = Field(...)
     display_name: str = Field(...)
+    connection_info: str = Field(...)
+    manager_phone_no: Optional[str]
+    business_registeration_no: Optional[str]
+    business_license_url: Optional[str]
+    brokerage_license_url: Optional[str]
 
 
 class UpdateUserModel(UpdateModel):
@@ -21,6 +26,10 @@ class UpdateUserModel(UpdateModel):
     password: str = Field(...)
     email: EmailStr = Field(...)
     display_name: str = Field(...)
+    manager_phone_no: Optional[str]
+    business_registeration_no: Optional[str]
+    business_license_url: Optional[str]
+    brokerage_license_url: Optional[str]
 
 
 class AuthenticateUserModel(UpdateModel):

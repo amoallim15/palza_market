@@ -16,8 +16,8 @@ def main(app):
         # TODO:
         pass
 
-    @app.post("/user")
-    def create_user(user: CreateBannerModel = Body(...)):
+    @app.post("/banner")
+    def create_banner(banner: CreateBannerModel = Body(...)):
         # TODO:
         pass
 

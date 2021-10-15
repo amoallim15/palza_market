@@ -22,7 +22,9 @@ def main(app):
         pass
 
     @app.put("/franchise/{franchise_id}")
-    def update_franchise(franchise_id: str, franchise: UpdateFranchiseModel = Body(...)):
+    def update_franchise(
+        franchise_id: str, franchise: UpdateFranchiseModel = Body(...)
+    ):
         # TODO:
         pass
 

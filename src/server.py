@@ -14,6 +14,7 @@ from src.api import (
     wishlist,
     magazine,
     franchise,
+    settings,
 )
 from src.core import utils
 from src.core.storage import MongoStore, ObjectStore
@@ -23,7 +24,7 @@ from src.plugins import authorization
 # 1. initialize the server..
 app = FastAPI(
     title="Palza Market",
-    version="0.4.12",
+    version="0.5.3",
     contact={
         "name": "Ali Moallim",
         "email": "moallim15@gmail.com",
@@ -42,6 +43,7 @@ authorization.main(app, authentication_url="auth")
 # 4. integrate routes..
 user.main(app)
 home_page.main(app)
+settings.main(app)
 realstate.main(app)
 wishlist.main(app)
 search.main(app)

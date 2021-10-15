@@ -17,3 +17,8 @@ def main(app):
     @app.get("/health")
     def health_check():
         return {"status": "OK"}
+
+    @app.get("/verification-hash")
+    def get_verification_hash():
+        # TODO:
+        pass

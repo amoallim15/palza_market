@@ -1,7 +1,5 @@
 from pydantic import Field, HttpUrl
 from src.core.model import CreateModel, UpdateModel
-from typing import List
-from src.core.enums import BannerLocation
 
 
 class CreateFranchiseModel(CreateModel):

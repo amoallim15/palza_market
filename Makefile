@@ -13,7 +13,7 @@ AWS_SSH_PRIVATE_KEY := ./secret/paljamarket-keypair.pem
 LOCALHOST_MONGODB_USERNAME := master
 LOCALHOST_MONGODB_PASSWORD := 12345678
 LOCALHOST_MONGODB_ENDPOINT := localhost:27017
-LOCALHOST_MONGODB_DATABASE := palza_market
+LOCALHOST_MONGODB_DATABASE := palza-market
 
 help:
 	@echo "make initialize: will initialize the project environment such as (MongoDB documents, s3 images store, and server environment)."
@@ -73,3 +73,6 @@ db.connect:
 
 ssl.secret:
 	@openssl rand -hex 32
+
+find:
+	@lsof -i tcp:8000

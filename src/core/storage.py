@@ -26,7 +26,7 @@ class MongoStore(BaseDataStore):
     FIELDS = ["host", "port", "username", "password", "database"]
 
     def connect(self):
-        url = f"mongodb://{self.username}:{self.password}@{self.host}/{self.database}?retryWrites=false&replicaSet=rs0&readPreference=secondaryPreferred"
+        url = f"mongodb://{self.username}:{self.password}@{self.host}/{self.database}?retryWrites=false&readPreference=secondaryPreferred"
         connector = motor.motor_asyncio.AsyncIOMotorClient(url)
         return getattr(connector, self.database)
 

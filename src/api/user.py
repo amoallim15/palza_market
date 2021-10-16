@@ -1,6 +1,5 @@
 from fastapi import Body, Depends, status, HTTPException
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
 from src.core.enums import UserType, UserMethod
 from pathlib import Path
 
@@ -10,21 +9,23 @@ from src.models.user import (
     UpdateUserModel,
     PatchUserModel,
     AuthenticateUserModel,
+    UserModel,
 )
 
 
 def main(app):
+    #
     @app.get("/user")
-    def users(token: str = Depends(app.token)):
+    def users(current_user=Depends(app.current_user)):
         # TODO:
         pass
 
     @app.get("/user/{user_id}")
-    def get_user(user_id: str):
+    def get_user(user_id: str, current_user=Depends(app.current_user)):
         # TODO:
         pass
 
-    @app.post("/user")
+    @app.post("/user", response_model=UserModel)
     async def create_user(user: CreateUserModel = Body(...)):
         #
         duplicate_email = await app.db["users"].find_one({"email": user.email})
@@ -86,23 +87,29 @@ def main(app):
         user = jsonable_encoder(user)
         result = await app.db["users"].insert_one(user)
         data = await app.db["users"].find_one({"_id": result.inserted_id})
-        #
-        return JSONResponse(status_code=status.HTTP_201_CREATED, content=data)
+        return UserModel(**data)
 
     @app.put("/user/{user_id}")
-    def update_user(user_id: str, user: UpdateUserModel = Body(...)):
+    def update_user(
+        user_id: str,
+        user: UpdateUserModel = Body(...),
+        current_user=Depends(app.current_user),
+    ):
         # TODO:
         pass
 
     @app.patch("/user/{user_id}")
-    def patch_user(user_id: str, user: PatchUserModel = Body(...)):
+    def patch_user(
+        user_id: str,
+        user: PatchUserModel = Body(...),
+        current_user=Depends(app.current_user),
+    ):
         # TODO:
         pass
 
-    @app.get("/auth")
-    async def is_authenticated():
-        # TODO:
-        pass
+    @app.get("/auth", response_model=UserModel)
+    async def is_authenticated(current_user=Depends(app.current_user)):
+        return current_user
 
     @app.post("/auth")
     async def authenticate_user(user_form: AuthenticateUserModel = Body(...)):

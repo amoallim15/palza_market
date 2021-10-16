@@ -26,7 +26,7 @@ class Secret:
 
     def payload(self, token):
         try:
-            payload = jwt.decode(token, self.key, algorithm=[self.algorithm])
+            payload = jwt.decode(token, self.key, algorithms=[self.algorithm])
             return payload
         except JWTError:
             return None

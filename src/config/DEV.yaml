@@ -21,7 +21,7 @@ SETTINGS:
 SECRET: 
   key: 25d8cd8be9894e7b479e69e3fd69c8e8ea61b1f99e3660888c3b4389a13777b1
   algo: HS256
-  expires_in: 30 # in minutes..
+  expires_in: 1440 # in minutes..
 
 IMAGE_STORE_DIR_CONFIG:
   temporary: temporary

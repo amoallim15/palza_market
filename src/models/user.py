@@ -16,9 +16,9 @@ class UserModel(ResModel):
     is_approved: bool = False
     #
     business_name: Optional[str] = Field(...)
-    business_representative: Optional[str] = ""
-    brokerage_record_no: Optional[str] = ""
-    legal_address: Optional[str] = ""
+    business_representative: Optional[str]
+    brokerage_record_no: Optional[str]
+    legal_address: Optional[str]
     #
     manager_phone_no: Optional[str]
     business_registeration_no: Optional[str]

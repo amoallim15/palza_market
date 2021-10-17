@@ -17,7 +17,11 @@ class BaseDataStore(ABC):
             setattr(self, field, kwargs[field])
 
     @abstractmethod
-    def connect(self):
+    async def connect(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    async def close(self):
         raise NotImplementedError
 
 
@@ -25,21 +29,28 @@ class MongoStore(BaseDataStore):
 
     FIELDS = ["host", "port", "username", "password", "database"]
 
-    def connect(self):
+    async def connect(self):
         url = f"mongodb://{self.username}:{self.password}@{self.host}/{self.database}?retryWrites=false&readPreference=secondaryPreferred"
-        connector = motor.motor_asyncio.AsyncIOMotorClient(url)
+        self.connector = connector = motor.motor_asyncio.AsyncIOMotorClient(url)
         return getattr(connector, self.database)
+
+    async def close(self):
+        self.connector.close()
+        pass
 
 
 class ObjectStore(BaseDataStore):
 
     FIELDS = ["aws_access_key_id", "aws_secret_access_key", "aws_region"]
 
-    def connect(self):
-        connector = boto3.resource(
+    async def connect(self):
+        self.connector = connector = boto3.resource(
             "s3",
             aws_access_key_id=self.aws_access_key_id,
             aws_secret_access_key=self.aws_secret_access_key,
             region_name=self.aws_region,
         )
         return connector
+
+    async def close(self):
+        pass

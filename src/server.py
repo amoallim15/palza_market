@@ -25,6 +25,7 @@ from src.plugins import authorization
 
 
 # 1. initialize the server..
+config = utils.get_config()
 app = FastAPI(
     title="Palza Market",
     version="0.6.1",
@@ -33,23 +34,39 @@ app = FastAPI(
         "email": "moallim15@gmail.com",
     },
 )
-
-# 2. integrate initial configuration..
-app.config = config = utils.get_config()
+db = MongoStore(**config["DATABASE_CONFIG"])
+s3 = ObjectStore(**config["IMAGE_STORE_CONFIG"])
+secret = Secret(**config["SECRET"])
 #
-app.db = MongoStore(**config["DATABASE_CONFIG"]).connect()
-app.s3 = ObjectStore(**config["IMAGE_STORE_CONFIG"]).connect()
-app.secret = Secret(**config["SECRET"])
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=config["APP"]["origins"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+async def startup():
+    app.config = config = utils.get_config()
+    #
+    app.db = await db.connect()
+    app.s3 = await s3.connect()
+    app.secret = Secret(**config["SECRET"])
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=config["APP"]["origins"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+
+#
+async def shutdown():
+    await db.close()
+    await s3.close()
+
+
+#
+
+# 2. add event handlers..
+app.add_event_handler("startup", startup)
+app.add_event_handler("shutdown", shutdown)
+
 # 3. integrate plugins..
 authorization.main(app, authentication_url="auth")
-
 
 # 4. integrate routes..
 user.main(app)

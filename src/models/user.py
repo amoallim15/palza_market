@@ -1,4 +1,4 @@
-from pydantic import Field, EmailStr
+from pydantic import Field, EmailStr, validator
 from src.core.model import ResModel, CreateModel, UpdateModel
 from src.core.enums import UserRole, UserType, UserMethod
 from typing import Optional
@@ -11,6 +11,7 @@ class UserModel(ResModel):
     name: str = Field(...)
     phone_no: str = Field(...)
     username: str = Field(...)
+    display_name: Optional[str]
     #
     user_role: UserRole = UserRole.CLIENT
     is_approved: bool = False
@@ -24,6 +25,12 @@ class UserModel(ResModel):
     business_registeration_no: Optional[str]
     business_license_url: Optional[str]
     brokerage_card_url: Optional[str]
+
+    @validator("display_name", always=True)
+    def validate_display_name(cls, value, values):
+        if value is None:
+            return values["username"]
+        return value
 
 
 class CreateUserModel(CreateModel):
@@ -75,3 +82,4 @@ class AuthenticateUserModel(UpdateModel):
 class PatchUserModel(UpdateModel):
     user_role: Optional[UserRole]
     is_approved: Optional[bool]
+    user_type: Optional[UserType]

@@ -1,6 +1,6 @@
 from fastapi import Body, Depends, status, HTTPException
 from fastapi.encoders import jsonable_encoder
-from src.core.enums import UserType, UserMethod
+from src.core.enums import UserType, UserMethod, UserRole
 from pathlib import Path
 
 # from fastapi.security import OAuth2PasswordRequestForm
@@ -85,6 +85,11 @@ def main(app):
             user.brokerage_card_url = f"{host}/{brokerage_card_new_key}"
         #
         user = jsonable_encoder(user)
+        # 
+        user["display_name"] = user["username"]
+        user["user_role"] = UserRole.CLIENT
+        user["is_approved"] = False
+        # 
         result = await app.db["users"].insert_one(user)
         data = await app.db["users"].find_one({"_id": result.inserted_id})
         return UserModel(**data)

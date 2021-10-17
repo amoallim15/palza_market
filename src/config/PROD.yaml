@@ -1,6 +1,6 @@
 APP:
   origins: 
-    - http://palza-market-main.s3-website.ap-northeast-2.amazonaws.com/
+    - http://palza-market-main.s3-website.ap-northeast-2.amazonaws.com
 
 SETTINGS: 
   title: Palza Market

@@ -1,10 +1,7 @@
 from fastapi import Body, status, Response, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from src.models.settings import (
-    CreateSettingsModel,
-    UpdateSettingsModel,
-)
+from src.models.settings import CreateSettingsModel, UpdateSettingsModel, SettingsModel
 
 
 def main(app):
@@ -21,7 +18,7 @@ def main(app):
             response.status_code = status.HTTP_201_CREATED
         #
         data = await app.db["settings"].find_one()
-        return data
+        return SettingsModel(**data)
 
     @app.post("/settings")
     async def reset_settings():
@@ -35,6 +32,12 @@ def main(app):
         raise HTTPException(status_code=404, detail="Settings not found.")
 
     @app.put("/settings")
-    def update_settings(settings: UpdateSettingsModel = Body(...)):
+    async def update_settings(settings: UpdateSettingsModel = Body(...)):
         # TODO:
-        pass
+        settings = jsonable_encoder(settings)
+        result = await app.db["settings"].update_one({}, {"$set": settings})
+        print(result.modified_count)
+        # if result.modified_count == 1:
+        data = await app.db["settings"].find_one()
+        return SettingsModel(**data)
+        # raise HTTPException(status_code=404, detail="Settings not found.")

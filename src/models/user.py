@@ -40,7 +40,6 @@ class CreateUserModel(CreateModel):
     name: str = Field(...)
     phone_no: str = Field(...)
     username: str = Field(...)
-    # connection_info: str = Field(...)
     #
     password: Optional[str]
     #
@@ -56,27 +55,22 @@ class CreateUserModel(CreateModel):
 
 
 class UpdateUserModel(UpdateModel):
-    user_method: UserMethod = Field(...)
-    user_type: UserType = Field(...)
-    username: str = Field(...)
-    password: str = Field(...)
     email: EmailStr = Field(...)
+    phone_no: str = Field(...)
+    username: str = Field(...)
     display_name: str = Field(...)
     #
-    business_name: Optional[str]
-    business_representative: Optional[str]
-    brokerage_record_no: Optional[str]
-    legal_address: Optional[str]
-    #
     manager_phone_no: Optional[str]
-    business_registeration_no: Optional[str]
-    business_license_url: Optional[str]
-    brokerage_card_url: Optional[str]
 
 
 class AuthenticateUserModel(UpdateModel):
     username: str = Field(...)
     password: str = Field(...)
+
+
+class ChangePasswordModel(UpdateModel):
+    password: str = Field(...)
+    new_password: str = Field(...)
 
 
 class PatchUserModel(UpdateModel):

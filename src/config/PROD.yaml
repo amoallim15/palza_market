@@ -1,6 +1,7 @@
 APP:
   origins: 
     - http://palza-market-main.s3-website.ap-northeast-2.amazonaws.com
+    - http://localhost:3000
 
 SETTINGS: 
   title: Palza Market
@@ -9,14 +10,12 @@ SETTINGS:
   kakao_key: 2c2744b65e19d51683e55859e2aa4491
   naver_key: 2c2744b65e19d51683e55859e2aa4491
   google_key: 2c2744b65e19d51683e55859e2aa4491
-  # user verification..
-  nice_key: 2c2744b65e19d51683e55859e2aa4491
   # sms..
-  gambia_key: 2c2744b65e19d51683e55859e2aa4491
+  gabia_key: 2c2744b65e19d51683e55859e2aa4491
   # business info..
   nsdi_key: 1f5c58af868b1df99706da
   # crawling..
-  odcloud_key: MgY51pDPRtCjEZlQz%2B2ZCiZvTnxEPoABjRFnRQXMcQtyaC3hwLF8P51nid7ghxIKhXxu7SAhqAfM7Snxmlj8hA%3D%3D 
+  odcloud_key: MgY51pDPRtCjEZlQz%2B2ZCiZvTnxEPoABjRFnRQXMcQtyaC3hwLF8P51nid7ghxIKhXxu7SAhqAfM7Snxmlj8hA%3D%3D
 
 SECRET: 
   key: 25d8cd8be9894e7b479e69e3fd69c8e8ea61b1f99e3660888c3b4389a13777b1

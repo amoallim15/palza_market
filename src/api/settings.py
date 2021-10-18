@@ -36,7 +36,6 @@ def main(app):
         # TODO:
         settings = jsonable_encoder(settings)
         result = await app.db["settings"].update_one({}, {"$set": settings})
-        print(result.modified_count)
         # if result.modified_count == 1:
         data = await app.db["settings"].find_one()
         return SettingsModel(**data)

@@ -95,11 +95,20 @@ def main(app):
         return UserModel(**data)
 
     @app.put("/user/{user_id}")
-    def update_user(
+    async def update_user(
         user_id: str,
         user: UpdateUserModel = Body(...),
         current_user=Depends(app.current_user),
     ):
+        if user_id != current_user.id and current_user.user_role not in ["ADMIN", "EMPLOYEE"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username."
+            )
+        # 
+        user = jsonable_encoder(user)
+        result = await app.db["users"].update_one({ "_id": user_id }, { "$set": user })
+        data = await app.db["users"].find_one({ "_id": user_id })
+        return UserModel(**data)
         # TODO:
         pass
 

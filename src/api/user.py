@@ -37,8 +37,7 @@ def main(app):
         #
         return UserModel(**data)
 
-    app.post("/user", response_model=UserModel)
-
+    @app.post("/user", response_model=UserModel)
     async def create_user(user: CreateUserModel = Body(...)):
         #
         duplicate_email = await app.db["users"].find_one({"email": user.email})
@@ -95,8 +94,7 @@ def main(app):
         #
         return UserModel(**data)
 
-    app.patch("/user/{user_id}")
-
+    @app.patch("/user/{user_id}")
     async def patch_user(
         user_id: str,
         user: PatchUserModel = Body(...),
@@ -115,8 +113,7 @@ def main(app):
         #
         return UserModel(**data)
 
-    app.put("/user/{user_id}")
-
+    @app.put("/user/{user_id}")
     async def update_user(
         user_id: str,
         user: UpdateUserModel = Body(...),

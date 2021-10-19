@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api import auth, user
+from src.api import auth, user, settings, image
 from src.core import utils
 from src.core.secret import Secret
 from src.core.storage import MongoStore, ObjectStore
@@ -54,6 +54,8 @@ authorization.main(app, authentication_url="auth")
 # 4. integrate routes..
 auth.main(app)
 user.main(app)
+settings.main(app)
+image.main(app)
 # settings.main(app)
 # realstate.main(app)
 # wishlist.main(app)

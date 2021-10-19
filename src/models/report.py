@@ -1,8 +1,8 @@
 from pydantic import Field
-from src.core.model import CreateModel, UpdateModel
+from src.core.model import Model, UpdateModel
 
 
-class CreateReportModel(CreateModel):
+class ReportModel(Model):
     realstate_id: str = Field(...)
     content: str = Field(...)
 

@@ -1,14 +1,13 @@
 from pydantic import Field
-from src.core.model import CreateModel, UpdateModel
+from src.core.model import Model, UpdateModel
 
 
-class CreateReviewModel(CreateModel):
+class ReviewModel(Model):
     realstate_id: str = Field(...)
     content: str = Field(...)
     rating: int = Field(..., le=10)
 
 
 class UpdateReviewModel(UpdateModel):
-    realstate_id: str = Field(...)
     content: str = Field(...)
     rating: int = Field(..., le=10)

@@ -2,6 +2,7 @@ APP:
   origins: 
     - http://palza-market-main.s3-website.ap-northeast-2.amazonaws.com
     - http://localhost:3000
+  page_size: 10
 
 SETTINGS: 
   title: Palza Market

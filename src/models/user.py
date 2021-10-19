@@ -1,41 +1,50 @@
 from pydantic import Field, EmailStr, validator
-from src.core.model import ResModel, CreateModel, UpdateModel
+from src.core.model import Model, UpdateModel
 from src.core.enums import UserRole, UserType, UserMethod
 from typing import Optional
 
 
-class UserModel(ResModel):
+class UserModel(Model):
     user_method: UserMethod = Field(...)
     user_type: UserType = Field(...)
+    # Not Optional
+    user_role: Optional[UserRole]
+    #
     email: EmailStr = Field(...)
     name: str = Field(...)
     phone_no: str = Field(...)
     username: str = Field(...)
-    display_name: Optional[str]
     #
-    user_role: UserRole = UserRole.CLIENT
-    is_approved: bool = False
+    is_approved: Optional[bool]
     #
-    business_name: Optional[str] = Field(...)
+    manager_phone_no: Optional[str]
+    #
+    business_name: Optional[str]
     business_representative: Optional[str]
     brokerage_record_no: Optional[str]
     legal_address: Optional[str]
     #
-    manager_phone_no: Optional[str]
     business_registeration_no: Optional[str]
     business_license_url: Optional[str]
     brokerage_card_url: Optional[str]
 
-    @validator("display_name", always=True)
-    def validate_display_name(cls, value, values):
+    @validator("user_role", always=True)
+    def validate_user_role(cls, value, values):
         if value is None:
-            return values["username"]
+            return UserRole.CLIENT
+        return value
+
+    @validator("is_approved", always=True)
+    def validate_is_approved(cls, value, values):
+        if value is None:
+            return False
         return value
 
 
-class CreateUserModel(CreateModel):
+class CreateUserModel(Model):
     user_method: UserMethod = Field(...)
     user_type: UserType = Field(...)
+    #
     email: EmailStr = Field(...)
     name: str = Field(...)
     phone_no: str = Field(...)
@@ -43,12 +52,13 @@ class CreateUserModel(CreateModel):
     #
     password: Optional[str]
     #
+    manager_phone_no: Optional[str]
+    #
     business_name: Optional[str]
     business_representative: Optional[str]
     brokerage_record_no: Optional[str]
     legal_address: Optional[str]
     #
-    manager_phone_no: Optional[str]
     business_registeration_no: Optional[str]
     business_license_url: Optional[str]
     brokerage_card_url: Optional[str]
@@ -57,23 +67,35 @@ class CreateUserModel(CreateModel):
 class UpdateUserModel(UpdateModel):
     email: EmailStr = Field(...)
     phone_no: str = Field(...)
-    username: str = Field(...)
     display_name: str = Field(...)
     #
     manager_phone_no: Optional[str]
+    #
+    business_name: Optional[str]
+    business_representative: Optional[str]
+    brokerage_record_no: Optional[str]
+    legal_address: Optional[str]
+    #
+    business_registeration_no: Optional[str]
+    business_license_url: Optional[str]
+    brokerage_card_url: Optional[str]
 
 
-class AuthenticateUserModel(UpdateModel):
+class AuthenticateUserModel(Model):
     username: str = Field(...)
     password: str = Field(...)
 
 
-class ChangePasswordModel(UpdateModel):
+class ChangePasswordUserModel(Model):
     password: str = Field(...)
     new_password: str = Field(...)
+    confirm_new_password: str = Field(...)
 
 
-class PatchUserModel(UpdateModel):
+class PatchUserModel(Model):
     user_role: Optional[UserRole]
-    is_approved: Optional[bool]
     user_type: Optional[UserType]
+    #
+    name: Optional[str]
+    #
+    is_approved: Optional[bool]

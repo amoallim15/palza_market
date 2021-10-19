@@ -1,6 +1,7 @@
 APP:
   origins: 
     - http://localhost:3000
+  page_size: 10
 
 SETTINGS: 
   title: Palza Market

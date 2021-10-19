@@ -1,23 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api import (
-    others,
-    notice,
-    realstate,
-    report,
-    user,
-    home_page,
-    review,
-    search,
-    image,
-    sms,
-    banner,
-    wishlist,
-    magazine,
-    franchise,
-    settings,
-    callback,
-)
+from src.api import auth, user
 from src.core import utils
 from src.core.secret import Secret
 from src.core.storage import MongoStore, ObjectStore
@@ -69,19 +52,19 @@ app.add_event_handler("shutdown", shutdown)
 authorization.main(app, authentication_url="auth")
 
 # 4. integrate routes..
+auth.main(app)
 user.main(app)
-home_page.main(app)
-settings.main(app)
-realstate.main(app)
-wishlist.main(app)
-search.main(app)
-review.main(app)
-notice.main(app)
-report.main(app)
-banner.main(app)
-magazine.main(app)
-franchise.main(app)
-image.main(app)
-sms.main(app)
-others.main(app)
-callback.main(app)
+# settings.main(app)
+# realstate.main(app)
+# wishlist.main(app)
+# search.main(app)
+# review.main(app)
+# notice.main(app)
+# report.main(app)
+# banner.main(app)
+# magazine.main(app)
+# franchise.main(app)
+# image.main(app)
+# sms.main(app)
+# others.main(app)
+# callback.main(app)

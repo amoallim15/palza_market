@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
+from typing import List
 
 
 class PyObjectId(ObjectId):
@@ -18,23 +19,29 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string")
 
 
-class CreateModel(BaseModel):
+class Model(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
 
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+        validate_assignment = True
 
 
 class UpdateModel(BaseModel):
     class Config:
+        allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
+        validate_assignment = True
 
 
-class ResModel(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+class ListModel(BaseModel):
+
+    count: int = Field(...)
+    page: int = Field(...)
+    data: List[dict] = Field(...)
 
     class Config:
         allow_population_by_field_name = True

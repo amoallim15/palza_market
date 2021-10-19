@@ -1,8 +1,8 @@
 from pydantic import Field
-from src.core.model import CreateModel
+from src.core.model import Model
 
 
-class CreateSMSModel(CreateModel):
+class SMSModel(Model):
     reciever_phone_no: str = Field(...)
     title: str = Field(...)
     content: str = Field(...)

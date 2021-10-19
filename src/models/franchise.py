@@ -1,8 +1,8 @@
 from pydantic import Field, HttpUrl
-from src.core.model import CreateModel, UpdateModel
+from src.core.model import Model, UpdateModel
 
 
-class CreateFranchiseModel(CreateModel):
+class FranchiseModel(Model):
     image_url: HttpUrl = Field(...)
     external_url: HttpUrl = Field(...)
     store_count: int = Field(...)

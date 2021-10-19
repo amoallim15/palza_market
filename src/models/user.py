@@ -50,7 +50,11 @@ class CreateUserModel(Model):
     phone_no: str = Field(...)
     username: str = Field(...)
     #
+    personal_info_use_consent: bool = Field(...)
+    terms_and_conditions_consent: bool = Field(...)
+    #
     password: Optional[str]
+    confirm_password: Optional[str]
     #
     manager_phone_no: Optional[str]
     #

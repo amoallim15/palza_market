@@ -39,6 +39,8 @@ def main(app):
 
     @app.post("/user", response_model=UserModel)
     async def create_user(user: CreateUserModel = Body(...)):
+        if not user.personal_info_use_consent or not user.terms_and_conditions_consent:
+            raise HTTPException(status=400, details="Consent not given.")
         #
         duplicate_email = await app.db["users"].find_one({"email": user.email})
         if duplicate_email:
@@ -58,12 +60,14 @@ def main(app):
             )
         #
         if user.user_method == UserMethod.EMAIL:
-            if not user.password:
+            if not user.password or user.confirm_password:
                 raise HTTPException(
                     status=400, detail="EMAIL sign up requires password."
                 )
-            else:
-                user.password = app.secret.hash(user.password)
+            if user.password != user.confirm_password:
+                raise HTTPException(status=400, detail="Password does not match.")
+            #
+            user.password = app.secret.hash(user.password)
         #
         duplicate_username = await app.db["users"].find_one({"username": user.username})
         if duplicate_username:
@@ -88,6 +92,10 @@ def main(app):
         user["display_name"] = user["username"]
         user["user_role"] = UserRole.CLIENT
         user["is_approved"] = False
+        #
+        del user["confirm_password"]
+        del user["personal_info_use_consent"]
+        del user["terms_and_conditions_consent"]
         #
         result = await app.db["users"].insert_one(user)
         data = await app.db["users"].find_one({"_id": result.inserted_id})

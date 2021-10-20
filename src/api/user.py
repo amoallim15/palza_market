@@ -136,7 +136,7 @@ def main(app):
         duplicate_email = await app.db["users"].find_one({"email": user.email})
         if duplicate_email and duplicate_email["_id"] != user_id:
             raise HTTPException(status_code=400, detail="Duplicated email.")
-        # 
+        #
         user = jsonable_encoder(user)
         await app.db["users"].update_one({"_id": user_id}, {"$set": user})
         data = await app.db["users"].find_one({"_id": user_id})

@@ -1,12 +1,14 @@
-from fastapi import Body, status, Response, HTTPException
+from fastapi import Body, status, Response, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from src.models.settings import SettingsModel
+from src.core.enums import UserRole
 
 
 def main(app):
     @app.get("/settings")
     async def get_settings(response: Response):
+        #
         data = await app.db["settings"].find_one()
         #
         if data is None:
@@ -19,7 +21,10 @@ def main(app):
         return SettingsModel(**data)
 
     @app.post("/settings/refresh")
-    async def reset_settings():
+    async def reset_settings(current_user=Depends(app.current_user)):
+        if current_user.user_role != UserRole.ADMIN:
+            raise HTTPException(status_code=403, detail="Not allowed.")
+        #
         data = await app.db["settings"].find_one()
         #
         if data is not None:
@@ -30,7 +35,12 @@ def main(app):
         raise HTTPException(status_code=404, detail="Settings not found.")
 
     @app.put("/settings")
-    async def update_settings(settings: SettingsModel = Body(...)):
+    async def update_settings(
+        settings: SettingsModel = Body(...), current_user=Depends(app.current_user)
+    ):
+        if current_user.user_role != UserRole.ADMIN:
+            raise HTTPException(status_code=403, detail="Not allowed.")
+        #
         settings = jsonable_encoder(settings)
         await app.db["settings"].update_one({}, {"$set": settings})
         data = await app.db["settings"].find_one()

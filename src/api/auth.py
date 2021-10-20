@@ -12,9 +12,9 @@ def main(app):
     async def authenticate(user_form: AuthenticateUserModel = Body(...)):
         data = await app.db["users"].find_one({"username": user_form.username})
         if data is None:
-            raise HTTPException(status_code=401, details="Incorrect username.")
+            raise HTTPException(status_code=401, detail="Incorrect username.")
         if not app.secret.verify(user_form.password, data["password"]):
-            raise HTTPException(status_code=401, details="Incorrect password.")
+            raise HTTPException(status_code=401, detail="Incorrect password.")
         #
         token = app.secret.token({"sub": data["_id"]})
         #

@@ -33,18 +33,18 @@ def main(app):
     async def get_user(user_id: str, current_user=Depends(app.current_user)):
         data = await app.db["users"].find_one({"_id": user_id})
         if data is None:
-            return HTTPException(status=404, details="user not found.")
+            return HTTPException(status_code=404, detail="user not found.")
         #
         return UserModel(**data)
 
     @app.post("/user", response_model=UserModel)
     async def create_user(user: CreateUserModel = Body(...)):
         if not user.personal_info_use_consent or not user.terms_and_conditions_consent:
-            raise HTTPException(status=400, details="Consent not given.")
+            raise HTTPException(status_code=400, detail="Consent not given.")
         #
         duplicate_email = await app.db["users"].find_one({"email": user.email})
         if duplicate_email:
-            raise HTTPException(status=400, details="Duplicated email.")
+            raise HTTPException(status_code=400, detail="Duplicated email.")
         #
         if user.user_type == UserType.AGENCY and (
             not user.business_name
@@ -56,22 +56,22 @@ def main(app):
             or not user.brokerage_card_url
         ):
             raise HTTPException(
-                status=400, detail="Agency required information is missing."
+                status_code=400, detail="Agency required information is missing."
             )
         #
         if user.user_method == UserMethod.EMAIL:
             if not user.password or user.confirm_password:
                 raise HTTPException(
-                    status=400, detail="EMAIL sign up requires password."
+                    status_code=400, detail="EMAIL sign up requires password."
                 )
             if user.password != user.confirm_password:
-                raise HTTPException(status=400, detail="Password does not match.")
+                raise HTTPException(status_code=400, detail="Password does not match.")
             #
             user.password = app.secret.hash(user.password)
         #
         duplicate_username = await app.db["users"].find_one({"username": user.username})
         if duplicate_username:
-            raise HTTPException(status=400, detail="Duplicated username.")
+            raise HTTPException(status_code=400, detail="Duplicated username.")
         #
         if user.user_type == UserType.AGENCY:
             user.business_license_url = store_image(
@@ -133,6 +133,10 @@ def main(app):
         ]:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
+        duplicate_email = await app.db["users"].find_one({"email": user.email})
+        if duplicate_email and duplicate_email["_id"] != user_id:
+            raise HTTPException(status_code=400, detail="Duplicated email.")
+        # 
         user = jsonable_encoder(user)
         await app.db["users"].update_one({"_id": user_id}, {"$set": user})
         data = await app.db["users"].find_one({"_id": user_id})

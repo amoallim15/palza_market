@@ -14,6 +14,7 @@ class UserModel(Model):
     name: str = Field(...)
     phone_no: str = Field(...)
     username: str = Field(...)
+    display_name: str = Field(...)
     #
     is_approved: Optional[bool]
     #
@@ -38,6 +39,12 @@ class UserModel(Model):
     def validate_is_approved(cls, value, values):
         if value is None:
             return False
+        return value
+
+    @validator("display_name", always=True)
+    def validate_display_name(cls, value, values):
+        if value is None:
+            return values["username"]
         return value
 
 

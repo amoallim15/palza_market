@@ -45,7 +45,7 @@ py.setup:
 py.format:
 	@black . --exclude '$(VENV)'
 	@flake8 \
-		--ignore E501,C901,E203 \
+		--ignore E501,C901,E203,W503 \
         --exclude .git,__pycache__,$(VENV),build,dist \
         --max-complexity 10
 

@@ -6,14 +6,14 @@ class NoticeModel(Model):
     title: str = Field(...)
     thumbnail_url: HttpUrl = Field(...)
     content: str = Field(...)
-    category: str = Field(...)
+    category_id: str = Field(...)
 
 
 class UpdateNoticeModel(UpdateModel):
     title: str = Field(...)
     thumbnail_url: HttpUrl = Field(...)
     content: str = Field(...)
-    category: str = Field(...)
+    category_id: str = Field(...)
 
 
 class NoticeCategoryModel(Model):

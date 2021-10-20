@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api import auth, user, settings, image
+from src.api import auth, user, settings, image, notice, notice_category
 from src.core import utils
 from src.core.secret import Secret
 from src.core.storage import MongoStore, ObjectStore
@@ -56,12 +56,13 @@ auth.main(app)
 user.main(app)
 settings.main(app)
 image.main(app)
+notice.main(app)
+notice_category.main(app)
 # settings.main(app)
 # realstate.main(app)
 # wishlist.main(app)
 # search.main(app)
 # review.main(app)
-# notice.main(app)
 # report.main(app)
 # banner.main(app)
 # magazine.main(app)

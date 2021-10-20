@@ -18,7 +18,7 @@ def main(app):
         data = await app.db["settings"].find_one()
         return SettingsModel(**data)
 
-    @app.post("/settings")
+    @app.post("/settings/refresh")
     async def reset_settings():
         data = await app.db["settings"].find_one()
         #
@@ -29,7 +29,7 @@ def main(app):
         #
         raise HTTPException(status_code=404, detail="Settings not found.")
 
-    @app.put("/settings/refresh")
+    @app.put("/settings")
     async def update_settings(settings: SettingsModel = Body(...)):
         settings = jsonable_encoder(settings)
         await app.db["settings"].update_one({}, {"$set": settings})

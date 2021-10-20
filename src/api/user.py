@@ -2,7 +2,7 @@ from fastapi import Body, Depends, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from src.core.enums import UserType, UserRole, UserMethod
 from src.core.model import ListModel
-from src.core.utils import store_image
+from src.core.utils import update_image, short_uuid
 
 from src.models.user import (
     UserModel,
@@ -33,7 +33,7 @@ def main(app):
     async def get_user(user_id: str, current_user=Depends(app.current_user)):
         data = await app.db["users"].find_one({"_id": user_id})
         if data is None:
-            return HTTPException(status_code=404, detail="user not found.")
+            raise HTTPException(status_code=404, detail="user not found.")
         #
         return UserModel(**data)
 
@@ -74,17 +74,17 @@ def main(app):
             raise HTTPException(status_code=400, detail="Duplicated username.")
         #
         if user.user_type == UserType.AGENCY:
-            user.business_license_url = store_image(
+            user.business_license_url = update_image(
                 app=app,
-                tmp_path=user.business_license_url,
-                perm_path=f"users/{user.id}",
-                name="business_license",
+                old_path=user.business_license_url,
+                new_path=f"users/{user.id}",
+                name=f"{short_uuid()}-business_license",
             )
-            user.brokerage_card_url = store_image(
+            user.brokerage_card_url = update_image(
                 app=app,
-                tmp_path=user.brokerage_card_url,
-                perm_path=f"users/{user.id}",
-                name="brokerage_card",
+                old_path=user.brokerage_card_url,
+                new_path=f"users/{user.id}",
+                name=f"{short_uuid()}-brokerage_card",
             )
         #
         user = jsonable_encoder(user)

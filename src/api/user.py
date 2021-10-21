@@ -112,7 +112,7 @@ def main(app):
         current_user=Depends(app.current_user),
     ):
 
-        if user_id != current_user.id and current_user.user_role not in [
+        if user_id != str(current_user.id) and current_user.user_role not in [
             UserRole.ADMIN,
             UserRole.EMPLOYEE,
         ]:
@@ -132,7 +132,7 @@ def main(app):
         user: UpdateUserModel = Body(...),
         current_user=Depends(app.current_user),
     ):
-        if user_id != current_user.id and current_user.user_role not in [
+        if user_id != (current_user.id) and current_user.user_role not in [
             UserRole.ADMIN,
             UserRole.EMPLOYEE,
         ]:

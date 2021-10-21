@@ -5,8 +5,8 @@ from typing import Optional, List
 
 class WishlistModel(Model):
     user_id: str = Field(...)
-    realstate_ids: Optional[List[str]]
-    agency_ids: Optional[List[str]]
+    realstate_ids: List[str] = Field(default_factory=list)
+    agency_ids: List[str] = Field(default_factory=list)
 
     @validator("realstate_ids", always=True)
     def validate_realstate_ids(cls, value, values):
@@ -21,8 +21,7 @@ class WishlistModel(Model):
         return value
 
 
-class PatchWishListModel(Model):
-    user_id: str = Field(...)
-    realstate_ids: Optional[List[str]]
-    agency_ids: Optional[List[str]]
+class PatchWishlistModel(Model):
+    realstate_ids: List[str] = Field(default_factory=list)
+    agency_ids: List[str] = Field(default_factory=list)
     operation: bool = Field(...)

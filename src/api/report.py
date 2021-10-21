@@ -16,7 +16,7 @@ def main(app):
     ):
         _filter = {}
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
-            _filter = { user_id: current_user.id }
+            _filter = {"user_id": str(current_user.id)}
         #
         page_size = app.config["APP"]["page_size"]
         #
@@ -37,7 +37,7 @@ def main(app):
         #
         if (
             current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]
-            or current_user.id != data["user_id"]
+            or str(current_user.id) != data["user_id"]
         ):
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
@@ -52,9 +52,9 @@ def main(app):
             raise HTTPException(status_code=400, detail="Realstate does not exist.")
         #
         report = jsonable_encoder(report)
-        # 
-        report["user_id"] = current_user.id
-        # 
+        #
+        report["user_id"] = str(current_user.id)
+        #
         result = await app.db["reports"].insert_one(report)
         data = await app.db["reports"].find_one({"_id": result.inserted_id})
         if data is None:
@@ -71,10 +71,10 @@ def main(app):
         data = await app.db["reports"].find_one({"_id": report_id})
         if not data:
             raise HTTPException(status_code=404, detail="Report not found.")
-        # 
+        #
         if (
             current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]
-            or current_user.id != data["user_id"]
+            or str(current_user.id) != data["user_id"]
         ):
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
@@ -98,7 +98,7 @@ def main(app):
             raise HTTPException(status_code=404, detail="Report not found.")
         if (
             current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]
-            or current_user.id != data["user_id"]
+            or str(current_user.id) != data["user_id"]
         ):
             raise HTTPException(status_code=403, detail="Not allowed.")
         #

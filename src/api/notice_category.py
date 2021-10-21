@@ -1,7 +1,6 @@
 from fastapi import Body, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
-from src.core.model import ListModel
-from fastapi.responses import JSONResponse
+from src.core.model import ListModel, SuccessModel
 from src.core.enums import UserRole
 
 from src.models.notice import (
@@ -78,6 +77,6 @@ def main(app):
             {"_id": notice_category_id}
         )
         if result.deleted_count == 1:
-            return JSONResponse(status_code=204)
+            return SuccessModel()
         #
         raise HTTPException(status_code=404, detail="Notice Category not found.")

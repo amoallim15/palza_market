@@ -1,6 +1,6 @@
 from fastapi import File, UploadFile, status
-from fastapi.responses import JSONResponse
 import uuid
+from src.core.model import SuccessModel
 
 
 def main(app):
@@ -23,4 +23,4 @@ def main(app):
         bucket = app.s3.Bucket(bucket_name)
         bucket.objects.filter(Prefix="tmp/").delete()
         #
-        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT)
+        return SuccessModel()

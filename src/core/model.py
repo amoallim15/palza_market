@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
-from typing import List
+from typing import List, Optional
 
 
 class PyObjectId(ObjectId):
@@ -42,6 +42,18 @@ class ListModel(BaseModel):
     count: int = Field(...)
     page: int = Field(...)
     data: List[dict] = Field(...)
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        validate_assignment = True
+
+
+class SuccessModel(BaseModel):
+
+    status: int = 200
+    detail: Optional[str]
 
     class Config:
         allow_population_by_field_name = True

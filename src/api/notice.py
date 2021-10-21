@@ -1,8 +1,7 @@
 from fastapi import Body, Depends, HTTPException, Query
 from fastapi.encoders import jsonable_encoder
 from src.core.utils import update_image, short_uuid
-from src.core.model import ListModel
-from fastapi.responses import JSONResponse
+from src.core.model import ListModel, SuccessModel
 from src.core.enums import UserRole
 
 from src.models.notice import (
@@ -93,6 +92,6 @@ def main(app):
         #
         result = await app.db["notices"].delete_one({"_id": notice_id})
         if result.deleted_count == 1:
-            return JSONResponse(status_code=204)
+            return SuccessModel()
         #
         raise HTTPException(status_code=404, detail="Notice not found.")

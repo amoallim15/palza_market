@@ -1,8 +1,8 @@
 from fastapi import Body, status, Response, HTTPException, Depends
-from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from src.models.settings import SettingsModel
 from src.core.enums import UserRole
+from src.core.model import SuccessModel
 
 
 def main(app):
@@ -30,7 +30,7 @@ def main(app):
         if data is not None:
             result = await app.db["settings"].delete_one({"_id": data["_id"]})
             if result.deleted_count == 1:
-                return JSONResponse(status_code=status.HTTP_204_NO_CONTENT)
+                return SuccessModel()
         #
         raise HTTPException(status_code=404, detail="Settings not found.")
 

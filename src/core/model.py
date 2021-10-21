@@ -22,10 +22,8 @@ class PyObjectId(ObjectId):
 
 class Model(BaseModel):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    # created_at: datetime = Field(default_factory=datetime.now)
-    # updated_at: datetime = Field(default_factory=datetime.now)
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
 
     @validator("created_at", always=True)
     def validate_created_at(cls, value: datetime):
@@ -43,12 +41,11 @@ class Model(BaseModel):
 
 
 class UpdateModel(BaseModel):
-    # updated_at: datetime = Field(default_factory=datetime.now)
-    updated_at: Optional[datetime]
+    updated_at: datetime = Field(default_factory=datetime.now)
 
     @validator("updated_at", always=True)
     def validate_updated_at(cls, value: datetime):
-        return value or datetime.now()
+        return datetime.now()
 
     class Config:
         allow_population_by_field_name = True

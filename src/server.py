@@ -1,6 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.api import auth, user, settings, image, notice, notice_category
+from src.api import (
+    auth,
+    user,
+    settings,
+    image,
+    notice,
+    notice_category,
+    franchise,
+    magazine,
+    crontab,
+    others,
+    banner,
+    sms,
+    report,
+    review
+)
 from src.core import utils
 from src.core.secret import Secret
 from src.core.storage import MongoStore, ObjectStore
@@ -20,7 +35,8 @@ app = FastAPI(
 db = MongoStore(**config["DATABASE_CONFIG"])
 s3 = ObjectStore(**config["IMAGE_STORE_CONFIG"])
 secret = Secret(**config["SECRET"])
-#
+
+
 async def startup():
     app.config = config = utils.get_config()
     #
@@ -36,7 +52,6 @@ async def startup():
     )
 
 
-#
 async def shutdown():
     await db.close()
     await s3.close()
@@ -52,22 +67,21 @@ app.add_event_handler("shutdown", shutdown)
 authorization.main(app, authentication_url="auth")
 
 # 4. integrate routes..
+others.main(app)
 auth.main(app)
 user.main(app)
 settings.main(app)
 image.main(app)
 notice.main(app)
 notice_category.main(app)
-# settings.main(app)
+franchise.main(app)
+magazine.main(app)
+crontab.main(app)
+banner.main(app)
+sms.main(app)
+report.main(app)
+review.main(app)
 # realstate.main(app)
 # wishlist.main(app)
 # search.main(app)
-# review.main(app)
-# report.main(app)
-# banner.main(app)
-# magazine.main(app)
-# franchise.main(app)
-# image.main(app)
-# sms.main(app)
-# others.main(app)
 # callback.main(app)

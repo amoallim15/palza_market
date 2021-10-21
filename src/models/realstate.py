@@ -4,6 +4,7 @@ from typing import List, Optional
 
 
 class RealstateModel(Model):
+    user_id: str = Field(...)
     display_name: str = Field(...)
     image_urls: List[HttpUrl] = Field(...)
     lng: int = Field(...)

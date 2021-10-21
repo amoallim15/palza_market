@@ -39,5 +39,7 @@ def main(app):
             {"_id": user_id}, {"$set": {"password": password}}
         )
         data = await app.db["users"].find_one({"_id": user_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="User not found.")
         #
         return UserModel(**data)

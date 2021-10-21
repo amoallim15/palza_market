@@ -14,7 +14,8 @@ class UserModel(Model):
     name: str = Field(...)
     phone_no: str = Field(...)
     username: str = Field(...)
-    display_name: str = Field(...)
+    # Not Optional
+    display_name: Optional[str]
     #
     is_approved: Optional[bool]
     #

@@ -3,7 +3,8 @@ from src.core.model import Model, UpdateModel
 
 
 class ReviewModel(Model):
-    realstate_id: str = Field(...)
+    user_id: str = Field(...)
+    agency_id: str = Field(...)
     content: str = Field(...)
     rating: int = Field(..., le=10)
 

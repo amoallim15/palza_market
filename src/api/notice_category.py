@@ -24,7 +24,7 @@ def main(app):
     async def get_notice_category(notice_category_id: str):
         data = await app.db["notice_categories"].find_one({"_id": notice_category_id})
         if data is None:
-            raise HTTPException(status_code=404, detail="notice category not found.")
+            raise HTTPException(status_code=404, detail="Notice category not found.")
         #
         return NoticeCategoryModel(**data)
 
@@ -45,6 +45,8 @@ def main(app):
         notice_category = jsonable_encoder(notice_category)
         result = await app.db["notice_categories"].insert_one(notice_category)
         data = await app.db["notice_categories"].find_one({"_id": result.inserted_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="Notice category not found.")
         #
         return NoticeCategoryModel(**data)
 
@@ -62,6 +64,8 @@ def main(app):
             {"_id": notice_category_id}, {"$set": notice_category}
         )
         data = await app.db["notice_categories"].find_one({"_id": notice_category_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="Notice category not found.")
         #
         return NoticeCategoryModel(**data)
 

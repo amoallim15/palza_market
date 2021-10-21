@@ -3,7 +3,9 @@ from src.core.model import Model, UpdateModel
 
 
 class ReportModel(Model):
+    user_id: str = Field(...)
     realstate_id: str = Field(...)
+    user_id: str = Field(...)
     content: str = Field(...)
 
 

@@ -11,27 +11,28 @@ from src.models.notice import (
 
 
 def main(app):
-    @app.get("/notice")
+    @app.get("/notice", response_model=ListModel)
     async def notices(page: int = Query(0, ge=0)):
         page_size = app.config["APP"]["page_size"]
         #
         cursor = app.db["notices"].find().skip(page * page_size).limit(page_size)
+        count = await app.db["notices"].count_documents({})
         data_list = []
         #
         async for notice in cursor:
             data_list.append(NoticeModel(**notice))
         #
-        return ListModel(page=page, count=len(data_list), data=data_list)
+        return ListModel(page=page, count=count, data=data_list)
 
-    @app.get("/notice/{notice_id}")
+    @app.get("/notice/{notice_id}", response_model=NoticeModel)
     async def get_notice(notice_id: str):
         data = await app.db["notices"].find_one({"_id": notice_id})
         if data is None:
-            raise HTTPException(status_code=404, detail="notice not found.")
+            raise HTTPException(status_code=404, detail="Notice not found.")
         #
         return NoticeModel(**data)
 
-    @app.post("/notice")
+    @app.post("/notice", response_model=NoticeModel)
     async def create_notice(
         notice: NoticeModel = Body(...), current_user=Depends(app.current_user)
     ):
@@ -56,10 +57,12 @@ def main(app):
         notice = jsonable_encoder(notice)
         result = await app.db["notices"].insert_one(notice)
         data = await app.db["notices"].find_one({"_id": result.inserted_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="Notice not found.")
         #
         return NoticeModel(**data)
 
-    @app.put("/notice/{notice_id}")
+    @app.put("/notice/{notice_id}", response_model=NoticeModel)
     async def update_notice(
         notice_id: str,
         notice: UpdateNoticeModel = Body(...),
@@ -79,10 +82,12 @@ def main(app):
         notice = jsonable_encoder(notice)
         await app.db["notices"].update_one({"_id": notice_id}, {"$set": notice})
         data = await app.db["notices"].find_one({"_id": notice_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="Notice not found.")
         #
         return NoticeModel(**data)
 
-    @app.delete("/notice/{notice_id}")
+    @app.delete("/notice/{notice_id}", response_model=SuccessModel)
     async def delete_notice(
         notice_id: str,
         current_user=Depends(app.current_user),

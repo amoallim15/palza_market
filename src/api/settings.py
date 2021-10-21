@@ -44,5 +44,7 @@ def main(app):
         settings = jsonable_encoder(settings)
         await app.db["settings"].update_one({}, {"$set": settings})
         data = await app.db["settings"].find_one()
+        if data is None:
+            raise HTTPException(status_code=404, detail="Settings not found.")
         #
         return SettingsModel(**data)

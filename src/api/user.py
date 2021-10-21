@@ -22,18 +22,19 @@ def main(app):
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
         cursor = app.db["users"].find().skip(page * page_size).limit(page_size)
+        count = await app.db["users"].count_documents({})
         data_list = []
         #
         async for user in cursor:
             data_list.append(UserModel(**user))
         #
-        return ListModel(page=page, count=len(data_list), data=data_list)
+        return ListModel(page=page, count=count, data=data_list)
 
     @app.get("/user/{user_id}", response_model=UserModel)
     async def get_user(user_id: str, current_user=Depends(app.current_user)):
         data = await app.db["users"].find_one({"_id": user_id})
         if data is None:
-            raise HTTPException(status_code=404, detail="user not found.")
+            raise HTTPException(status_code=404, detail="User not found.")
         #
         return UserModel(**data)
 
@@ -99,6 +100,8 @@ def main(app):
         #
         result = await app.db["users"].insert_one(user)
         data = await app.db["users"].find_one({"_id": result.inserted_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="User not found.")
         #
         return UserModel(**data)
 
@@ -118,6 +121,8 @@ def main(app):
         user = jsonable_encoder(user)
         await app.db["users"].update_one({"_id": user_id}, {"$set": user})
         data = await app.db["users"].find_one({"_id": user_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="User not found.")
         #
         return UserModel(**data)
 
@@ -140,5 +145,7 @@ def main(app):
         user = jsonable_encoder(user)
         await app.db["users"].update_one({"_id": user_id}, {"$set": user})
         data = await app.db["users"].find_one({"_id": user_id})
+        if data is None:
+            raise HTTPException(status_code=404, detail="User not found.")
         #
         return UserModel(**data)

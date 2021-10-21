@@ -1,4 +1,4 @@
-from fastapi import File, UploadFile, status
+from fastapi import File, UploadFile
 import uuid
 from src.core.model import SuccessModel
 

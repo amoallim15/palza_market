@@ -3,7 +3,7 @@ from src.core.model import Model, UpdateModel
 
 
 class FranchiseModel(Model):
-    image_url: HttpUrl = Field(...)
+    thumbnail_url: HttpUrl = Field(...)
     external_url: HttpUrl = Field(...)
     store_count: int = Field(...)
     monthly_sales: int = Field(...)
@@ -11,7 +11,7 @@ class FranchiseModel(Model):
 
 
 class UpdateFranchiseModel(UpdateModel):
-    image_url: HttpUrl = Field(...)
+    thumbnail_url: HttpUrl = Field(...)
     external_url: HttpUrl = Field(...)
     store_count: int = Field(...)
     monthly_sales: int = Field(...)

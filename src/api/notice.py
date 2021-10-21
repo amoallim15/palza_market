@@ -56,7 +56,7 @@ def main(app):
         #
         notice = jsonable_encoder(notice)
         result = await app.db["notices"].insert_one(notice)
-        data = await app.db["notice"].find_one({"_id": result.inserted_id})
+        data = await app.db["notices"].find_one({"_id": result.inserted_id})
         #
         return NoticeModel(**data)
 
@@ -73,7 +73,7 @@ def main(app):
             notice.thumbnail_url = update_image(
                 app=app,
                 old_path=notice.thumbnail_url,
-                new_path=f"notices/{notice.id}",
+                new_path=f"notices/{notice_id}",
                 name=f"{short_uuid()}-thumbnail",
             )
         #

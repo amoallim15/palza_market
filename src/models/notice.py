@@ -17,8 +17,8 @@ class UpdateNoticeModel(UpdateModel):
 
 
 class NoticeCategoryModel(Model):
-    name: str = Field(...)
+    label: str = Field(...)
 
 
 class UpdateNoticeCategoryModel(UpdateModel):
-    name: str = Field(...)
+    label: str = Field(...)

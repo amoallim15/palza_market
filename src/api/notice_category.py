@@ -13,7 +13,7 @@ from src.models.notice import (
 def main(app):
     @app.get("/notice-category")
     async def notice_categories():
-        cursor = app.db["notices"].find()
+        cursor = app.db["notice_categories"].find()
         data_list = []
         #
         async for notice_category in cursor:
@@ -38,7 +38,7 @@ def main(app):
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
         duplicate_notice_category = app.db["notice_categories"].find_one(
-            {"name": notice_category.name}
+            {"label": notice_category.label}
         )
         if duplicate_notice_category:
             raise HTTPException(status_code=400, detail="Duplicated notice category.")

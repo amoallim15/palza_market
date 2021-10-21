@@ -1,5 +1,6 @@
 from pydantic import Field, HttpUrl, validator
 from src.core.model import Model, UpdateModel
+from typing import Optional
 
 
 class MagazineModel(Model):
@@ -8,7 +9,7 @@ class MagazineModel(Model):
     content: str = Field(...)
     news_source: str = Field(...)
     #
-    view_count: int = Field(...)
+    view_count: Optional[int]
 
     @validator("view_count", always=True)
     def validate_view_count(cls, value, values):

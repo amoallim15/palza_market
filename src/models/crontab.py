@@ -5,8 +5,8 @@ from typing import Optional
 
 
 class CrontabModel(Model):
-    status: CrontabStatus = Field(...)
-    progress: int = Field(...)
+    status: Optional[CrontabStatus]
+    progress: Optional[int]
 
     @validator("status", always=True)
     def validate_status(cls, value, values):

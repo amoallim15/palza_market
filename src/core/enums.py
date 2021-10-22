@@ -39,3 +39,7 @@ class BannerLocation(str, enum.Enum):
     BANNER_10 = "BANNER_10"
     BANNER_11 = "BANNER_11"
     BANNER_12 = "BANNER_12"
+
+class ReviewType(str, enum.Enum):
+    BUYING = "BUYING"
+    SELLING = "SELLING"

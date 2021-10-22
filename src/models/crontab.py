@@ -23,4 +23,4 @@ class CrontabModel(Model):
 
 class UpdateCrontabModel(UpdateModel):
     status: Optional[CrontabStatus]
-    progress: int = Field(...)
+    progress: int = Field(..., ge=0, le=100)

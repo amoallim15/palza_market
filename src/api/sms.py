@@ -28,7 +28,10 @@ def main(app):
         pass
 
     @app.get("/sms/{sms_id}", response_model=SMSModel)
-    async def get_sms(sms_id: str):
+    async def get_sms(sms_id: str, current_user=Depends(app.current_user)):
+        if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
+            raise HTTPException(status_code=403, detail="Not allowed.")
+        #
         data = await app.db["sms"].find_one({"_id": sms_id})
         if data is None:
             raise HTTPException(status_code=404, detail="SMS not found.")

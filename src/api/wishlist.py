@@ -50,9 +50,9 @@ def main(app):
     async def patch_agency_wishlist(
         wishlist: PatchWishlistModel = Body(...), current_user=Depends(app.current_user)
     ):
-        # if current_user.user_type != UserType.INDIVIDUAL:
-        #     raise HTTPException(status_code=403, detail="Not allowed.")
-        #
+        if current_user.user_type != UserType.INDIVIDUAL:
+            raise HTTPException(status_code=403, detail="Not allowed.")
+
         data = await app.db["wishlists"].find_one({"user_id": str(current_user.id)})
         if not data:
             data = WishlistModel(user_id=str(current_user.id))
@@ -60,7 +60,6 @@ def main(app):
             await app.db["wishlists"].insert_one(data)
         data = WishlistModel(**data)
         #
-        print(wishlist)
         if wishlist.operation:
             data.realstate_ids = list(set(data.realstate_ids + wishlist.realstate_ids))
             data.agency_ids = list(set(data.agency_ids + wishlist.agency_ids))

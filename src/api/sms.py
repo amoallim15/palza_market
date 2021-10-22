@@ -3,7 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from src.core.model import ListModel  # , SuccessModel
 from src.core.enums import UserRole
 
-from src.models.sms import SMSModel
+from src.models.sms import SMSModel, SMSCountModel
 
 
 def main(app):
@@ -24,6 +24,11 @@ def main(app):
             data_list.append(SMSModel(**sms))
         #
         return ListModel(page=page, count=count, data=data_list)
+        # TODO:
+        pass
+
+    @app.get("/sms/count", response_model=SMSCountModel)
+    async def sms_count():
         # TODO:
         pass
 

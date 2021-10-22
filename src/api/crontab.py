@@ -11,10 +11,12 @@ from src.models.crontab import (
 
 def main(app):
     @app.get("/crontab", response_model=ListModel)
-    async def crontabs(page: int = Query(0, ge=0), current_user=Depends(app.current_user)):
+    async def crontabs(
+        page: int = Query(0, ge=0), current_user=Depends(app.current_user)
+    ):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
-        # 
+        #
         page_size = app.config["APP"]["page_size"]
         #
         cursor = app.db["crontabs"].find().skip(page * page_size).limit(page_size)
@@ -35,8 +37,7 @@ def main(app):
         return CrontabModel(**data)
 
     @app.post("/crontab", response_model=CrontabModel)
-    async def create_crontab(current_user=Depends(app.current_user)
-    ):
+    async def create_crontab(current_user=Depends(app.current_user)):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #

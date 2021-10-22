@@ -9,10 +9,3 @@ class BannerModel(Model):
     height: int = Field(...)
     image_urls: List[HttpUrl] = Field(...)
     location: BannerLocation = Field(...)
-
-
-class UpdateBannerModel(UpdateModel):
-    width: int = Field(...)
-    height: int = Field(...)
-    image_urls: List[HttpUrl] = Field(...)
-    location: BannerLocation = Field(...)

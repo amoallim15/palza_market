@@ -20,6 +20,7 @@ class UserMethod(str, enum.Enum):
 
 
 class CrontabStatus(str, enum.Enum):
+    CREATED = "CREATED"
     RUNNING = "RUNNING"
     SUCCEEDED = "SUCCEEDED"
     FAILED = "FAILED"

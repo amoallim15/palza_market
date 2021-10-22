@@ -11,7 +11,7 @@ class CrontabModel(Model):
     @validator("status", always=True)
     def validate_status(cls, value, values):
         if value is None:
-            return CrontabStatus.RUNNING
+            return CrontabStatus.CREATED
         return value
 
     @validator("progress", always=True)

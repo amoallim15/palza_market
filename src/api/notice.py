@@ -16,23 +16,18 @@ def main(app):
     async def notices(
         page: int = Query(0, ge=0), keywords: str = "", page_size: int = 10
     ):
-        _filter = {
-            "$lookup": {
-                "from": "notice_categories",
-                "localField": "category_id",
-                "foreignField": "_id",
-                "as": "category",
-            }
-        }
+        _filter = {}
         if keywords:
             _filter.update({"$text": {"$search": keywords}})
         #
         cursor = (
             app.db["notices"]
-            .find(_filter)
-            .sort("_id", -1)
-            .skip(page * page_size)
-            .limit(page_size)
+            .aggregate([{"$lookup": {
+                "from": "notice_categories",
+                "localField": "_id",
+                "foreignField": "notices.category_id",
+                "as": "category",
+            }}])
         )
         count = await app.db["notices"].count_documents({})
         data_list = []

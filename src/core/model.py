@@ -29,16 +29,12 @@ class CoreModel(BaseModel):
 
 
 class DateTimeModelMixin(CoreModel):
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    created_at: datetime = Field(default_factory=datetime.now)
+    updated_at: datetime = Field(default_factory=datetime.now)
 
     @validator("created_at", always=True)
     def validate_created_at(cls, value: datetime):
         return value or datetime.now()
-
-    @validator("updated_at", always=True)
-    def validate_updated_at(cls, value: datetime):
-        return datetime.now()
 
 
 class IDModelMixin(CoreModel):

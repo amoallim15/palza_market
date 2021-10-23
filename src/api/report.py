@@ -4,23 +4,29 @@ from src.core.model import ListModel, SuccessModel
 from src.core.enums import UserRole
 
 from src.models.report import (
-    ReportModel,
+    CreateReportModel,
     UpdateReportModel,
+    ReportModel,
 )
 
 
 def main(app):
     @app.get("/report", response_model=ListModel)
     async def reports(
-        page: int = Query(0, ge=0), current_user=Depends(app.current_user)
+        page: int = Query(0, ge=0),
+        current_user=Depends(app.current_user),
+        page_size: int = 10,
     ):
-        _filter = {}
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
-            _filter = {"user_id": str(current_user.id)}
+            raise HTTPException(status_code=403, detail="Not allowed.")
         #
-        page_size = app.config["APP"]["page_size"]
-        #
-        cursor = app.db["reports"].find(_filter).skip(page * page_size).limit(page_size)
+        cursor = (
+            app.db["reports"]
+            .find()
+            .sort("_id", -1)
+            .skip(page * page_size)
+            .limit(page_size)
+        )
         count = await app.db["reports"].count_documents({})
         data_list = []
         #
@@ -31,21 +37,18 @@ def main(app):
 
     @app.get("/report/{report_id}", response_model=ReportModel)
     async def get_report(report_id: str, current_user=Depends(app.current_user)):
+        if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
+            raise HTTPException(status_code=403, detail="Not allowed.")
+        #
         data = await app.db["reports"].find_one({"_id": report_id})
         if data is None:
             raise HTTPException(status_code=404, detail="Report not found.")
-        #
-        if (
-            current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]
-            or str(current_user.id) != data["user_id"]
-        ):
-            raise HTTPException(status_code=403, detail="Not allowed.")
         #
         return ReportModel(**data)
 
     @app.post("/report", response_model=ReportModel)
     async def create_report(
-        report: ReportModel = Body(...), current_user=Depends(app.current_user)
+        report: CreateReportModel = Body(...), current_user=Depends(app.current_user)
     ):
         realstate = app.db["realstates"].find_one({"realstate_id": report.realstate_id})
         if not realstate:
@@ -68,14 +71,7 @@ def main(app):
         report: UpdateReportModel = Body(...),
         current_user=Depends(app.current_user),
     ):
-        data = await app.db["reports"].find_one({"_id": report_id})
-        if not data:
-            raise HTTPException(status_code=404, detail="Report not found.")
-        #
-        if (
-            current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]
-            or str(current_user.id) != data["user_id"]
-        ):
+        if current_user.user_role != UserRole.ADMIN:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
         report = jsonable_encoder(report)
@@ -87,19 +83,8 @@ def main(app):
         return ReportModel(**data)
 
     @app.delete("/report/{report_id}", response_model=SuccessModel)
-    async def delete_report(
-        report_id: str,
-        current_user=Depends(app.current_user),
-    ):
-        data = await app.db["reports"].find_one(
-            {"_id": report_id}, current_user=Depends(app.current_user)
-        )
-        if not data:
-            raise HTTPException(status_code=404, detail="Report not found.")
-        if (
-            current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]
-            or str(current_user.id) != data["user_id"]
-        ):
+    async def delete_report(report_id: str, current_user=Depends(app.current_user)):
+        if current_user.user_role != UserRole.ADMIN:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
         result = await app.db["reports"].delete_one({"_id": report_id})

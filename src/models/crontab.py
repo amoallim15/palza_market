@@ -1,18 +1,12 @@
 from pydantic import Field, validator
-from src.core.model import Model, UpdateModel
+from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
 from src.core.enums import CrontabStatus
 from typing import Optional
 
 
-class CrontabModel(Model):
-    status: Optional[CrontabStatus]
-    progress: Optional[int]
-
-    @validator("status", always=True)
-    def validate_status(cls, value, values):
-        if value is None:
-            return CrontabStatus.CREATED
-        return value
+class CrontabModel(CoreModel):
+    status: CrontabStatus = Field(...)
+    progress: int = Field(..., ge=0, le=100)
 
     @validator("progress", always=True)
     def validate_progress(cls, value, values):
@@ -21,6 +15,14 @@ class CrontabModel(Model):
         return value
 
 
-class UpdateCrontabModel(UpdateModel):
+class CreateCrontabModel(CrontabModel, IDModelMixin, DateTimeModelMixin):
+    @validator("status", always=True)
+    def validate_status(cls, value, values):
+        if value is None:
+            return CrontabStatus.CREATED
+        return value
+
+
+class UpdateCrontabModel(CrontabModel, DateTimeModelMixin):
     status: Optional[CrontabStatus]
     progress: int = Field(..., ge=0, le=100)

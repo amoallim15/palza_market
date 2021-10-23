@@ -6,7 +6,7 @@ from src.core.model import SuccessModel
 
 
 def main(app):
-    @app.get("/settings")
+    @app.get("/settings", response_model=SettingsModel)
     async def get_settings(response: Response):
         #
         data = await app.db["settings"].find_one()
@@ -20,7 +20,7 @@ def main(app):
         data = await app.db["settings"].find_one()
         return SettingsModel(**data)
 
-    @app.post("/settings/refresh")
+    @app.post("/settings/refresh", response_model=SuccessModel)
     async def reset_settings(current_user=Depends(app.current_user)):
         if current_user.user_role != UserRole.ADMIN:
             raise HTTPException(status_code=403, detail="Not allowed.")
@@ -34,7 +34,7 @@ def main(app):
         #
         raise HTTPException(status_code=404, detail="Settings not found.")
 
-    @app.put("/settings")
+    @app.put("/settings", response_model=SettingsModel)
     async def update_settings(
         settings: SettingsModel = Body(...), current_user=Depends(app.current_user)
     ):

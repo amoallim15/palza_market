@@ -5,6 +5,7 @@ from src.core.enums import UserRole
 
 from src.models.notice import (
     NoticeCategoryModel,
+    CreateNoticeCategoryModel,
     UpdateNoticeCategoryModel,
 )
 
@@ -30,7 +31,7 @@ def main(app):
 
     @app.post("/notice-category")
     async def create_notice_category(
-        notice_category: NoticeCategoryModel = Body(...),
+        notice_category: CreateNoticeCategoryModel = Body(...),
         current_user=Depends(app.current_user),
     ):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
@@ -43,6 +44,7 @@ def main(app):
             raise HTTPException(status_code=400, detail="Duplicated notice category.")
         #
         notice_category = jsonable_encoder(notice_category)
+        #
         result = await app.db["notice_categories"].insert_one(notice_category)
         data = await app.db["notice_categories"].find_one({"_id": result.inserted_id})
         if data is None:
@@ -59,7 +61,14 @@ def main(app):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
+        duplicate_label = await app.db["notice_categories"].find_one(
+            {"label": notice_category.label}
+        )
+        if duplicate_label:
+            raise HTTPException(status_code=400, detail="Duplicated label.")
+        #
         notice_category = jsonable_encoder(notice_category)
+        #
         await app.db["notice_categories"].update_one(
             {"_id": notice_category_id}, {"$set": notice_category}
         )

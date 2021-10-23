@@ -12,9 +12,10 @@ from src.models.wishlist import (
 def main(app):
     @app.get("/wishlist/agency", response_model=ListModel)
     async def agencies(
-        page: int = Query(0, ge=0), current_user=Depends(app.current_user)
+        page: int = Query(0, ge=0),
+        current_user=Depends(app.current_user),
+        page_size: int = 10,
     ):
-        page_size = app.config["APP"]["page_size"]
         data_list = []
         count = 0
         #
@@ -30,9 +31,10 @@ def main(app):
 
     @app.get("/wishlist/realstate", response_model=ListModel)
     async def realstates(
-        page: int = Query(0, ge=0), current_user=Depends(app.current_user)
+        page: int = Query(0, ge=0),
+        current_user=Depends(app.current_user),
+        page_size: int = 10,
     ):
-        page_size = app.config["APP"]["page_size"]
         data_list = []
         count = 0
         #
@@ -70,6 +72,7 @@ def main(app):
             data.agency_ids = list(set(data.agency_ids) - set(wishlist.agency_ids))
         #
         wishlist = jsonable_encoder(data)
+        #
         await app.db["wishlists"].update_one(
             {"user_id": str(current_user.id)}, {"$set": wishlist}
         )

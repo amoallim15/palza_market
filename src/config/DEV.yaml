@@ -1,7 +1,6 @@
-APP:
+CORS:
   origins: 
     - http://localhost:3000
-  page_size: 10
 
 SETTINGS: 
   title: Palza Market
@@ -11,7 +10,9 @@ SETTINGS:
   naver_key: 2c2744b65e19d51683e55859e2aa4491
   google_key: 2c2744b65e19d51683e55859e2aa4491
   # sms..
-  gabia_key: 2c2744b65e19d51683e55859e2aa4491
+  gabia_sms_id: escada98969896
+  gabia_sms_key: 75d5e00645c569a59ac63630c7588fec
+  gabia_sms_callback_number: 01043730793
   # business info..
   nsdi_key: 1f5c58af868b1df99706da
   # crawling..

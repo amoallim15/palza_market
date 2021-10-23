@@ -20,7 +20,7 @@ from src.api import (
 from src.core import utils
 from src.core.secret import Secret
 from src.core.storage import MongoStore, ObjectStore
-from src.plugins import authorization
+from src.plugins import authorization, db_indices
 
 
 # 1. initialize the server..
@@ -46,11 +46,13 @@ async def startup():
     app.secret = Secret(**config["SECRET"])
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=config["APP"]["origins"],
+        allow_origins=config["CORS"]["origins"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    # integrate async plugins..
+    await db_indices.main(app)
 
 
 async def shutdown():

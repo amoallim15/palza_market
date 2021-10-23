@@ -1,5 +1,6 @@
 from fastapi import Body, Depends, HTTPException
 from src.models.user import AuthenticateUserModel, ChangePasswordUserModel, UserModel
+from src.core.enums import UserMethod
 
 
 def main(app):
@@ -26,12 +27,13 @@ def main(app):
         current_user=Depends(app.current_user),
         user_form: ChangePasswordUserModel = Body(...),
     ):
+        if current_user.user_method != UserMethod.EMAIL:
+            raise HTTPException(status_code=403, detail="Not allowed.")
+        #
         current_user_tmp = await app.db["users"].find_one({"_id": user_id})
         #
         if not app.secret.verify(user_form.password, current_user_tmp["password"]):
             raise HTTPException(status_code=400, detail="Incorrect password.")
-        if user_form.new_password != user_form.confirm_new_password:
-            raise HTTPException(status_code=400, detail="Password does not match.")
         #
         password = app.secret.hash(user_form.new_password)
         #

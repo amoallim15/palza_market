@@ -6,16 +6,21 @@ from src.core.enums import UserRole
 
 from src.models.franchise import (
     FranchiseModel,
+    CreateFranchiseModel,
     UpdateFranchiseModel,
 )
 
 
 def main(app):
     @app.get("/franchise", response_model=ListModel)
-    async def franchises(page: int = Query(0, ge=0)):
-        page_size = app.config["APP"]["page_size"]
-        #
-        cursor = app.db["franchises"].find().skip(page * page_size).limit(page_size)
+    async def franchises(page: int = Query(0, ge=0), page_size: int = 10):
+        cursor = (
+            app.db["franchises"]
+            .find()
+            .sort("_id", -1)
+            .skip(page * page_size)
+            .limit(page_size)
+        )
         count = await app.db["franchises"].count_documents({})
         data_list = []
         #
@@ -34,7 +39,8 @@ def main(app):
 
     @app.post("/franchise", response_model=FranchiseModel)
     async def create_franchise(
-        franchise: FranchiseModel = Body(...), current_user=Depends(app.current_user)
+        franchise: CreateFranchiseModel = Body(...),
+        current_user=Depends(app.current_user),
     ):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
@@ -47,6 +53,7 @@ def main(app):
         )
         #
         franchise = jsonable_encoder(franchise)
+        #
         result = await app.db["franchises"].insert_one(franchise)
         data = await app.db["franchises"].find_one({"_id": result.inserted_id})
         if data is None:
@@ -72,6 +79,7 @@ def main(app):
             )
         #
         franchise = jsonable_encoder(franchise)
+        #
         await app.db["franchises"].update_one(
             {"_id": franchise_id}, {"$set": franchise}
         )

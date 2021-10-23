@@ -3,15 +3,19 @@ from fastapi.encoders import jsonable_encoder
 from src.core.model import ListModel, SuccessModel
 from src.core.enums import UserType
 
-from src.models.review import ReviewModel, UpdateReviewModel
+from src.models.review import ReviewModel, CreateReviewModel, UpdateReviewModel
 
 
 def main(app):
     @app.get("/review", response_model=ListModel)
-    async def reviews(page: int = Query(0, ge=0)):
-        page_size = app.config["APP"]["page_size"]
-        #
-        cursor = app.db["reviews"].find().skip(page * page_size).limit(page_size)
+    async def reviews(page: int = Query(0, ge=0), page_size: int = 10):
+        cursor = (
+            app.db["reviews"]
+            .find()
+            .sort("_id", -1)
+            .skip(page * page_size)
+            .limit(page_size)
+        )
         count = await app.db["reviews"].count_documents({})
         data_list = []
         #
@@ -21,12 +25,13 @@ def main(app):
         return ListModel(page=page, count=count, data=data_list)
 
     @app.get("/review/agent/{agency_id}", response_model=ListModel)
-    async def reviews_by_agent(agency_id: str, page: int = Query(0, ge=0)):
-        page_size = app.config["APP"]["page_size"]
-        #
+    async def reviews_by_agent(
+        agency_id: str, page: int = Query(0, ge=0), page_size: int = 10
+    ):
         cursor = (
             app.db["reviews"]
             .find({"agency_id": agency_id})
+            .sort({"_id": -1})
             .skip(page * page_size)
             .limit(page_size)
         )
@@ -49,7 +54,7 @@ def main(app):
     @app.post("/review", response_model=ReviewModel)
     async def create_review(
         agency_id: str,
-        review: ReviewModel = Body(...),
+        review: CreateReviewModel = Body(...),
         current_user=Depends(app.current_user),
     ):
         if current_user.user_type != UserType.INDIVIDUAL:

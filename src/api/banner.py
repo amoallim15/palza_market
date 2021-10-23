@@ -4,7 +4,7 @@ from src.core.utils import update_image, short_uuid
 from src.core.model import ListModel, SuccessModel
 from src.core.enums import UserRole, BannerLocation
 
-from src.models.banner import BannerModel
+from src.models.banner import BannerModel, UpdateBannerModel
 
 
 def main(app):
@@ -34,7 +34,7 @@ def main(app):
     @app.put("/banner/{location}", response_model=BannerModel)
     async def put_banner(
         location: str,
-        banner: BannerModel = Body(...),
+        banner: UpdateBannerModel = Body(...),
         current_user=Depends(app.current_user),
     ):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:

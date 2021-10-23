@@ -6,17 +6,22 @@ from src.core.enums import UserRole
 
 from src.models.magazine import (
     MagazineModel,
+    CreateMagazineModel,
     UpdateMagazineModel,
-    IncrementViewsMagazineModel,
+    PatchMagazineModel,
 )
 
 
 def main(app):
     @app.get("/magazine", response_model=ListModel)
-    async def magazines(page: int = Query(0, ge=0)):
-        page_size = app.config["APP"]["page_size"]
-        #
-        cursor = app.db["magazines"].find().skip(page * page_size).limit(page_size)
+    async def magazines(page: int = Query(0, ge=0), page_size: int = 10):
+        cursor = (
+            app.db["magazines"]
+            .find()
+            .sort("_id", -1)
+            .skip(page * page_size)
+            .limit(page_size)
+        )
         count = await app.db["magazines"].count_documents({})
         data_list = []
         #
@@ -35,7 +40,8 @@ def main(app):
 
     @app.post("/magazine", response_model=MagazineModel)
     async def create_magazine(
-        magazine: MagazineModel = Body(...), current_user=Depends(app.current_user)
+        magazine: CreateMagazineModel = Body(...),
+        current_user=Depends(app.current_user),
     ):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
@@ -48,6 +54,7 @@ def main(app):
         )
         #
         magazine = jsonable_encoder(magazine)
+        #
         result = await app.db["magazines"].insert_one(magazine)
         data = await app.db["magazines"].find_one({"_id": result.inserted_id})
         #
@@ -71,6 +78,7 @@ def main(app):
             )
         #
         magazine = jsonable_encoder(magazine)
+        #
         await app.db["magazines"].update_one({"_id": magazine_id}, {"$set": magazine})
         data = await app.db["magazines"].find_one({"_id": magazine_id})
         if data is None:
@@ -80,7 +88,7 @@ def main(app):
 
     @app.patch("/magazine/{magazine_id}", response_model=MagazineModel)
     async def patch_magazine(
-        magazine_id: str, magazine: IncrementViewsMagazineModel = Body(...)
+        magazine_id: str, magazine: PatchMagazineModel = Body(...)
     ):
         data = await app.db["magazines"].find_one({"_id": magazine_id})
         #

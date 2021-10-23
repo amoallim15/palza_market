@@ -1,10 +1,9 @@
 from pydantic import Field, validator
-from src.core.model import Model
-from typing import Optional, List
+from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from typing import List
 
 
-class WishlistModel(Model):
-    user_id: str = Field(...)
+class WishlistBaseModel(CoreModel):
     realstate_ids: List[str] = Field(default_factory=list)
     agency_ids: List[str] = Field(default_factory=list)
 
@@ -21,7 +20,9 @@ class WishlistModel(Model):
         return value
 
 
-class PatchWishlistModel(Model):
-    realstate_ids: List[str] = Field(default_factory=list)
-    agency_ids: List[str] = Field(default_factory=list)
+class PatchWishlistModel(WishlistBaseModel, DateTimeModelMixin):
     operation: bool = Field(...)
+
+
+class WishlistModel(WishlistBaseModel, IDModelMixin, DateTimeModelMixin):
+    user_id: str = Field(...)

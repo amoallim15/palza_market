@@ -39,9 +39,9 @@ IMAGE_STORE_CONFIG:
   aws_region: ap-northeast-2
 
 DATABASE_CONFIG:
-  protocol: mongodb
-  host: palza-market-db.cluster-cxz5zqdhkz22.ap-northeast-2.docdb.amazonaws.com
+  protocol: mongodb+srv
+  host: cluster0.9k0ry.mongodb.net
   port: 27017
   username: master
-  password: 12345678
+  password: bsxTHGEqgRc347He
   database: palza-market

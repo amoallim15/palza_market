@@ -54,7 +54,6 @@ def main(app):
 
     @app.post("/user", response_model=UserModel)
     async def create_user(user: CreateUserModel = Body(...)):
-        print(user, type(user))
         duplicate_email = await app.db["users"].find_one({"email": user.email})
         if duplicate_email:
             raise HTTPException(status_code=400, detail="Duplicated email.")

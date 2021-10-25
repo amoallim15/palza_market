@@ -92,3 +92,23 @@ def get_gabia_sms_count(secret):
         return None
     #
     return json["data"]["sms_count"]
+
+
+def get_agency_info(name, auth_key, page_size=10, page=0):
+    req = {
+        "url": "http://openapi.nsdi.go.kr/nsdi/EstateBrkpgService/attr/getEBOfficeInfo",
+        "params": {
+            "authkey": auth_key,
+            "numOfRows": page_size,
+            "pageNo": page + 1,
+            "format": "json",
+            "bsnmCmpnm": name,
+        },
+    }
+    res = requests.get(**req)
+    if res.status_code != 200:
+        return None
+    json = res.json()
+    if "EBOffices" not in json:
+        return None
+    return json["EBOffices"]

@@ -10,6 +10,7 @@ class RealstateBaseModel(BaseModel):
     lat: int = Field(...)
     user_id: PyObjectId = Field(...)
     image_urls: List[HttpUrl] = Field(...)
+    count_down: datetime = Field(...)
     #
     legal_address: str = Field(...)
     m_name: str = Field(...)

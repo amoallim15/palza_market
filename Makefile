@@ -71,6 +71,9 @@ db.setup:
 db.connect:
 	@mongo --host $(LOCALHOST_MONGODB_ENDPOINT) --username $(LOCALHOST_MONGODB_USERNAME) --password $(LOCALHOST_MONGODB_PASSWORD) --authenticationDatabase $(LOCALHOST_MONGODB_DATABASE)
 
+db.prod.connect: 
+	@mongosh "mongodb+srv://cluster0.9k0ry.mongodb.net/$(LOCALHOST_MONGODB_DATABASE)" --username master
+
 ssl.secret:
 	@openssl rand -hex 32
 

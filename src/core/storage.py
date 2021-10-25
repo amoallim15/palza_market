@@ -27,10 +27,10 @@ class BaseDataStore(ABC):
 
 class MongoStore(BaseDataStore):
 
-    FIELDS = ["host", "port", "username", "password", "database"]
+    FIELDS = ["host", "port", "username", "password", "database", "protocol"]
 
     async def connect(self):
-        url = f"mongodb://{self.username}:{self.password}@{self.host}/{self.database}?retryWrites=false&readPreference=secondaryPreferred"
+        url = f"{self.protocol}://{self.username}:{self.password}@{self.host}/{self.database}?retryWrites=true&w=majority"
         self.connector = connector = motor.motor_asyncio.AsyncIOMotorClient(url)
         return getattr(connector, self.database)
 

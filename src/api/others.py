@@ -1,8 +1,9 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from src.core.model import SuccessModel, ListModel
 from src.models.user import UserModel
 from src.models.realstate import RealstateModel
 from src.core.enums import UserType
+from src.core.utils import get_agency_info
 
 
 def main(app):
@@ -50,3 +51,25 @@ def main(app):
         }
         #
         return ListModel(**result)
+
+    @app.get("/agency_info", response_model=ListModel)
+    async def agency_info(name: str, page=0, page_size=10):
+        NSDI_APP_KEY = app.config["SETTINGS"]["nsdi_key"]
+        result = get_agency_info(
+            auth_key=NSDI_APP_KEY,
+            name=name,
+            page=page,
+            page_size=page_size,
+        )
+        #
+        if not result:
+            raise HTTPException(status_code=500, detail="NSDI API error.")
+
+        return ListModel(
+            data=result["field"],
+            info={
+                "page": page,
+                "page_size": page_size,
+                "count": int(result["totalCount"]),
+            },
+        )

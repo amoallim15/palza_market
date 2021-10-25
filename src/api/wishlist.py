@@ -27,7 +27,11 @@ def main(app):
                 page * page_size : page_size + (page * page_size) + (page * page_size)
             ]
         #
-        return ListModel(page=page, count=count, data=data_list)
+        result = {
+            "data": data_list,
+            "info": {"count": count, "page": page, "page_size": page_size},
+        }
+        return ListModel(**result)
 
     @app.get("/wishlist/realstate", response_model=ListModel)
     async def realstates(
@@ -46,7 +50,11 @@ def main(app):
                 page * page_size : page_size + (page * page_size) + (page * page_size)
             ]
         #
-        return ListModel(page=page, count=count, data=data_list)
+        result = {
+            "data": data_list,
+            "info": {"count": count, "page": page, "page_size": page_size},
+        }
+        return ListModel(**result)
 
     @app.patch("/wishlist", response_model=WishlistModel)
     async def patch_agency_wishlist(

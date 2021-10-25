@@ -20,34 +20,37 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string")
 
 
+class DateTimeModelMixin(BaseModel):
+    created_at: datetime = None
+    updated_at: datetime = None
+
+    @validator("created_at", pre=True, always=True)
+    def default_created_at(cls, value, values):
+        return value or datetime.now()
+
+    @validator("updated_at", pre=True, always=True)
+    def default_updated_at(cls, value, values):
+        return value or values["created_at"]
+
+
+class IDModelMixin(BaseModel):
+    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+
+
+class ListModel(BaseModel):
+    info: dict = Field(...)
+    data: List[dict] = Field(default_factory=list)
+
+
+class SuccessModel(BaseModel):
+    status: int = 200
+    detail: Optional[str]
+
+
 class CoreModel(BaseModel):
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
         json_encoders = {ObjectId: str}
         validate_assignment = True
-
-
-class DateTimeModelMixin(CoreModel):
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: datetime = Field(default_factory=datetime.now)
-
-    @validator("created_at", always=True)
-    def validate_created_at(cls, value: datetime):
-        return value or datetime.now()
-
-
-class IDModelMixin(CoreModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-
-
-class ListModel(CoreModel):
-    keywords: Optional[str]
-    count: int = Field(...)
-    page: int = Field(...)
-    data: List[dict] = Field(...)
-
-
-class SuccessModel(CoreModel):
-    status: int = 200
-    detail: Optional[str]
+        use_enum_values = True

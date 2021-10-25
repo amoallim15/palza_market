@@ -1,11 +1,11 @@
-from pydantic import Field, validator
-from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from pydantic import Field, validator, BaseModel
+from src.core.model import IDModelMixin, DateTimeModelMixin, PyObjectId
 from typing import List
 
 
-class WishlistBaseModel(CoreModel):
-    realstate_ids: List[str] = Field(default_factory=list)
-    agency_ids: List[str] = Field(default_factory=list)
+class WishlistBaseModel(BaseModel):
+    realstate_ids: List[PyObjectId] = Field(default_factory=list)
+    agency_ids: List[PyObjectId] = Field(default_factory=list)
 
     @validator("realstate_ids", always=True)
     def validate_realstate_ids(cls, value, values):
@@ -20,9 +20,9 @@ class WishlistBaseModel(CoreModel):
         return value
 
 
-class PatchWishlistModel(WishlistBaseModel, DateTimeModelMixin):
+class PatchWishlistModel(DateTimeModelMixin, WishlistBaseModel):
     operation: bool = Field(...)
 
 
-class WishlistModel(WishlistBaseModel, IDModelMixin, DateTimeModelMixin):
-    user_id: str = Field(...)
+class WishlistModel(IDModelMixin, DateTimeModelMixin, WishlistBaseModel):
+    user_id: PyObjectId = Field(...)

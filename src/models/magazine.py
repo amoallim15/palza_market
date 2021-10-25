@@ -1,9 +1,9 @@
-from pydantic import Field, HttpUrl, validator
-from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from pydantic import Field, HttpUrl, validator, BaseModel
+from src.core.model import IDModelMixin, DateTimeModelMixin
 from typing import Optional
 
 
-class MagazineBaseModel(CoreModel):
+class MagazineBaseModel(BaseModel):
     thumbnail_url: HttpUrl = Field(...)
     title: str = Field(...)
     content: str = Field(...)
@@ -11,19 +11,19 @@ class MagazineBaseModel(CoreModel):
     magazine_type: str = Field(...)
 
 
-class CreateMagazineModel(MagazineBaseModel, IDModelMixin, DateTimeModelMixin):
+class CreateMagazineModel(IDModelMixin, DateTimeModelMixin, MagazineBaseModel):
     pass
 
 
-class UpdateMagazineModel(MagazineBaseModel, DateTimeModelMixin):
+class UpdateMagazineModel(DateTimeModelMixin, MagazineBaseModel):
     pass
 
 
-class PatchMagazineModel(MagazineBaseModel, DateTimeModelMixin):
+class PatchMagazineModel(DateTimeModelMixin, MagazineBaseModel):
     pass
 
 
-class MagazineModel(MagazineBaseModel, IDModelMixin, DateTimeModelMixin):
+class MagazineModel(IDModelMixin, DateTimeModelMixin, MagazineBaseModel):
     view_count: Optional[int]
 
     @validator("view_count", always=True)

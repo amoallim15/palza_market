@@ -11,7 +11,13 @@ def main(app):
     @app.get("/banner-locations", response_model=ListModel)
     async def banner_locations():
         data_list = list(map(lambda x: {x.name: x.value}, BannerLocation))
-        return ListModel(page=0, count=len(data_list), data=data_list)
+        count = len(data_list)
+        result = {
+            "data": data_list,
+            "info": {"page": 0, "count": count, "page_size": count},
+        }
+        #
+        return ListModel(**result)
 
     @app.get("/banner", response_model=ListModel)
     async def banners():

@@ -9,39 +9,79 @@ from src.models.review import ReviewModel, CreateReviewModel, UpdateReviewModel
 def main(app):
     @app.get("/review", response_model=ListModel)
     async def reviews(page: int = Query(0, ge=0), page_size: int = 10):
-        cursor = (
-            app.db["reviews"]
-            .find()
-            .sort("_id", -1)
-            .skip(page * page_size)
-            .limit(page_size)
-        )
-        count = await app.db["reviews"].count_documents({})
-        data_list = []
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                },
+            },
+            {"$unwind": "$user"},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "agency_id",
+                    "foreignField": "_id",
+                    "as": "agency",
+                },
+            },
+            {"$unwind": "$agency"},
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for review in cursor:
-            data_list.append(ReviewModel(**review))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["reviews"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
-    @app.get("/review/agent/{agency_id}", response_model=ListModel)
+    @app.get("/review/agency/{agency_id}", response_model=ListModel)
     async def reviews_by_agent(
         agency_id: str, page: int = Query(0, ge=0), page_size: int = 10
     ):
-        cursor = (
-            app.db["reviews"]
-            .find({"agency_id": agency_id})
-            .sort({"_id": -1})
-            .skip(page * page_size)
-            .limit(page_size)
-        )
-        count = await app.db["reviews"].count_documents({"agency_id": agency_id})
-        data_list = []
+        pipeline = [
+            {"$match": {"agency_id": agency_id}},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                },
+            },
+            {"$unwind": "$user"},
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for review in cursor:
-            data_list.append(ReviewModel(**review))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["reviews"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/review/{review_id}", response_model=ReviewModel)
     async def get_review(review_id: str):

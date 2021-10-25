@@ -16,6 +16,9 @@ from src.api import (
     report,
     review,
     wishlist,
+    realstate,
+    search,
+    callbacks,
 )
 from src.core import utils
 from src.core.secret import Secret
@@ -85,6 +88,6 @@ sms.main(app)
 report.main(app)
 review.main(app)
 wishlist.main(app)
-# realstate.main(app)
-# search.main(app)
-# callback.main(app)
+realstate.main(app)
+search.main(app)
+callbacks.main(app)

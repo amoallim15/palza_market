@@ -20,20 +20,26 @@ def main(app):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
-        cursor = (
-            app.db["crontabs"]
-            .find()
-            .sort("_id", -1)
-            .skip(page * page_size)
-            .limit(page_size)
-        )
-        count = await app.db["crontabs"].count_documents({})
-        data_list = []
+        pipeline = [
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for crontab in cursor:
-            data_list.append(CrontabModel(**crontab))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["crontabs"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/crontab/{crontab_id}", response_model=CrontabModel)
     async def get_crontab(crontab_id: str, current_user=Depends(app.current_user)):

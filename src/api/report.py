@@ -20,20 +20,44 @@ def main(app):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
-        cursor = (
-            app.db["reports"]
-            .find()
-            .sort("_id", -1)
-            .skip(page * page_size)
-            .limit(page_size)
-        )
-        count = await app.db["reports"].count_documents({})
-        data_list = []
+        pipeline = [
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "user_id",
+                    "foreignField": "_id",
+                    "as": "user",
+                },
+            },
+            {"$unwind": "$user"},
+            {
+                "$lookup": {
+                    "from": "realstates",
+                    "localField": "realstate_id",
+                    "foreignField": "_id",
+                    "as": "realstate",
+                },
+            },
+            {"$unwind": "$realstate"},
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for report in cursor:
-            data_list.append(ReportModel(**report))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["reports"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/report/{report_id}", response_model=ReportModel)
     async def get_report(report_id: str, current_user=Depends(app.current_user)):

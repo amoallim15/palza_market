@@ -14,20 +14,26 @@ from src.models.franchise import (
 def main(app):
     @app.get("/franchise", response_model=ListModel)
     async def franchises(page: int = Query(0, ge=0), page_size: int = 10):
-        cursor = (
-            app.db["franchises"]
-            .find()
-            .sort("_id", -1)
-            .skip(page * page_size)
-            .limit(page_size)
-        )
-        count = await app.db["franchises"].count_documents({})
-        data_list = []
+        pipeline = [
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for franchise in cursor:
-            data_list.append(FranchiseModel(**franchise))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["franchises"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/franchise/{franchise_id}", response_model=FranchiseModel)
     async def get_franchise(franchise_id: str):

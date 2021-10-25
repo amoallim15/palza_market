@@ -1,5 +1,5 @@
-from pydantic import Field, EmailStr, validator, constr, root_validator
-from src.core.model import CoreModel, DateTimeModelMixin, IDModelMixin
+from pydantic import Field, EmailStr, validator, constr
+from src.core.model import DateTimeModelMixin, IDModelMixin, CoreModel
 from src.core.enums import UserRole, UserType, UserMethod
 from typing import Optional
 
@@ -17,20 +17,18 @@ class UserBaseModel(CoreModel):
 class AgencyUserModelMixin(CoreModel):
     manager_phone_no: Optional[str]
     #
-    business_name: str
-    business_representative: str
-    brokerage_record_no: str
-    legal_address: str
+    business_name: Optional[str]
+    business_representative: Optional[str]
+    brokerage_record_no: Optional[str]
+    legal_address: Optional[str]
     #
-    business_registeration_no: str
-    business_license_url: str
-    brokerage_card_url: str
+    business_registeration_no: Optional[str]
+    business_license_url: Optional[str]
+    brokerage_card_url: Optional[str]
 
-    @root_validator()
-    def validate(cls, values):
-        if values.get("user_type") == UserType.INDIVIDUAL:
-            return values
-        if (
+    @validator("user_type", always=True, check_fields=False)
+    def validate_user_type(cls, value, values):
+        if value == UserType.AGENCY and (
             not values.get("business_name")
             or not values.get("business_representative")
             or not values.get("brokerage_record_no")
@@ -40,11 +38,11 @@ class AgencyUserModelMixin(CoreModel):
             or not values.get("brokerage_card_url")
         ):
             raise ValueError("Agency information must be fully provided.")
-        return values
+        return value
 
 
 class CreateUserModel(
-    UserBaseModel, IDModelMixin, DateTimeModelMixin, AgencyUserModelMixin
+    IDModelMixin, DateTimeModelMixin, AgencyUserModelMixin, UserBaseModel
 ):
     user_type: UserType = Field(...)
     user_method: UserMethod = Field(...)
@@ -56,15 +54,15 @@ class CreateUserModel(
     password: Optional[constr(min_length=6, max_length=100)]
     confirm_password: Optional[constr(min_length=6, max_length=100)]
 
-    @validator("password", always=True)
+    @validator("password", pre=True)
     def validate_email_sign_up(cls, value, values):
-        if values.get("user_method") == UserMethod.EMAIL and not values.get("password"):
+        if values.get("user_method") == UserMethod.EMAIL and not value:
             raise ValueError("Email sign up requires password.")
         return value
 
     @validator("confirm_password", always=True)
     def validate_confirm_password(cls, value, values):
-        if "password" in values and values["confirm_password"] != values["password"]:
+        if "password" in values and value != values["password"]:
             raise ValueError("Passwords does not match.")
         return value
 
@@ -81,7 +79,7 @@ class CreateUserModel(
         return value
 
 
-class UpdateUserModel(UserBaseModel, DateTimeModelMixin, AgencyUserModelMixin):
+class UpdateUserModel(DateTimeModelMixin, AgencyUserModelMixin, UserBaseModel):
     display_name: str = Field(...)
 
 
@@ -112,7 +110,7 @@ class PatchUserModel(DateTimeModelMixin):
     is_phone_no_verified: Optional[bool]
 
 
-class UserModel(UserBaseModel, IDModelMixin, DateTimeModelMixin, AgencyUserModelMixin):
+class UserModel(IDModelMixin, DateTimeModelMixin, AgencyUserModelMixin, UserBaseModel):
     user_method: UserMethod = Field(...)
     user_type: UserType = Field(...)
     name: str = Field(...)

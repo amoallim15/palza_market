@@ -19,7 +19,13 @@ def main(app):
         async for notice_category in cursor:
             data_list.append(NoticeCategoryModel(**notice_category))
         #
-        return ListModel(page=0, count=len(data_list), data=data_list)
+        count = len(data_list)
+        result = {
+            "data": data_list,
+            "info": {"page": 0, "count": count, "page_size": count},
+        }
+        #
+        return ListModel(**result)
 
     @app.get("/notice-category/{notice_category_id}")
     async def get_notice_category(notice_category_id: str):

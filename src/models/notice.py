@@ -1,39 +1,39 @@
-from pydantic import Field, HttpUrl
-from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from pydantic import Field, HttpUrl, BaseModel
+from src.core.model import IDModelMixin, DateTimeModelMixin, PyObjectId
 
 
-class NoticeBaseModel(CoreModel):
+class NoticeBaseModel(BaseModel):
     title: str = Field(...)
     thumbnail_url: HttpUrl = Field(...)
     content: str = Field(...)
-    category_id: str = Field(...)
+    category_id: PyObjectId = Field(...)
 
 
-class CreateNoticeModel(NoticeBaseModel, IDModelMixin, DateTimeModelMixin):
+class CreateNoticeModel(IDModelMixin, DateTimeModelMixin, NoticeBaseModel):
     pass
 
 
-class UpdateNoticeModel(NoticeBaseModel, DateTimeModelMixin):
+class UpdateNoticeModel(DateTimeModelMixin, NoticeBaseModel):
     pass
 
 
-class NoticeModel(NoticeBaseModel, IDModelMixin, DateTimeModelMixin):
+class NoticeModel(IDModelMixin, DateTimeModelMixin, NoticeBaseModel):
     category: dict = Field(...)
 
 
-class NoticeCategorBaseModel(CoreModel):
+class NoticeCategorBaseModel(BaseModel):
     label: str = Field(...)
 
 
 class CreateNoticeCategoryModel(
-    NoticeCategorBaseModel, IDModelMixin, DateTimeModelMixin
+    IDModelMixin, DateTimeModelMixin, NoticeCategorBaseModel
 ):
     pass
 
 
-class UpdateNoticeCategoryModel(NoticeCategorBaseModel, DateTimeModelMixin):
+class UpdateNoticeCategoryModel(DateTimeModelMixin, NoticeCategorBaseModel):
     pass
 
 
-class NoticeCategoryModel(NoticeCategorBaseModel, IDModelMixin, DateTimeModelMixin):
+class NoticeCategoryModel(IDModelMixin, DateTimeModelMixin, NoticeCategorBaseModel):
     pass

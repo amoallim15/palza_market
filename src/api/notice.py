@@ -16,26 +16,39 @@ def main(app):
     async def notices(
         page: int = Query(0, ge=0), keywords: str = "", page_size: int = 10
     ):
-        _filter = {}
+        pipeline = []
         if keywords:
-            _filter.update({"$text": {"$search": keywords}})
+            pipeline.append({"$match": {"$text": {"$search": keywords}}})
         #
-        cursor = (
-            app.db["notices"]
-            .aggregate([{"$lookup": {
-                "from": "notice_categories",
-                "localField": "_id",
-                "foreignField": "notices.category_id",
-                "as": "category",
-            }}])
-        )
-        count = await app.db["notices"].count_documents({})
-        data_list = []
+        pipeline += [
+            {
+                "$lookup": {
+                    "from": "notice_categories",
+                    "localField": "category_id",
+                    "foreignField": "_id",
+                    "as": "category",
+                }
+            },
+            {"$unwind": "$category"},
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for notice in cursor:
-            data_list.append(NoticeModel(**notice))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["notices"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/notice/{notice_id}", response_model=NoticeModel)
     async def get_notice(notice_id: str):

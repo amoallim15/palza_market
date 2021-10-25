@@ -21,14 +21,26 @@ def main(app):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
-        cursor = app.db["sms"].find().sort("_id", -1).skip(page * page_size).limit(page_size)
-        count = await app.db["sms"].count_documents({})
-        data_list = []
+        pipeline = [
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for sms in cursor:
-            data_list.append(SMSModel(**sms))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["sms"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/sms/count", response_model=SMSCountModel)
     async def sms_count(current_user=Depends(app.current_user)):

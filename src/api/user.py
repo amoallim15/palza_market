@@ -23,20 +23,26 @@ def main(app):
         if current_user.user_role not in [UserRole.ADMIN, UserRole.EMPLOYEE]:
             raise HTTPException(status_code=403, detail="Not allowed.")
         #
-        cursor = (
-            app.db["users"]
-            .find()
-            .sort("_id", -1)
-            .skip(page * page_size)
-            .limit(page_size)
-        )
-        count = await app.db["users"].count_documents({})
-        data_list = []
+        pipeline = [
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for user in cursor:
-            data_list.append(UserModel(**user))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["users"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/user/{user_id}", response_model=UserModel)
     async def get_user(user_id: str, current_user=Depends(app.current_user)):
@@ -48,6 +54,7 @@ def main(app):
 
     @app.post("/user", response_model=UserModel)
     async def create_user(user: CreateUserModel = Body(...)):
+        print(user, type(user))
         duplicate_email = await app.db["users"].find_one({"email": user.email})
         if duplicate_email:
             raise HTTPException(status_code=400, detail="Duplicated email.")

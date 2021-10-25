@@ -1,14 +1,14 @@
-from pydantic import Field, HttpUrl
-from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from pydantic import Field, HttpUrl, BaseModel
+from src.core.model import IDModelMixin, DateTimeModelMixin, PyObjectId
 from typing import List, Optional
 from datetime import datetime
 
 
-class RealstateBaseModel(CoreModel):
+class RealstateBaseModel(BaseModel):
     display_name: Optional[str]
     lng: int = Field(...)
     lat: int = Field(...)
-    user_id: str = Field(...)
+    user_id: PyObjectId = Field(...)
     image_urls: List[HttpUrl] = Field(...)
     #
     legal_address: str = Field(...)
@@ -42,13 +42,13 @@ class RealstateBaseModel(CoreModel):
     etc_content: str = Field(...)
 
 
-class CreateRealstateModel(RealstateBaseModel, IDModelMixin, DateTimeModelMixin):
+class CreateRealstateModel(IDModelMixin, DateTimeModelMixin, RealstateBaseModel):
     pass
 
 
-class UpdateRealstateModel(RealstateBaseModel, DateTimeModelMixin):
+class UpdateRealstateModel(DateTimeModelMixin, RealstateBaseModel):
     pass
 
 
-class RealstateModel(RealstateBaseModel, IDModelMixin, DateTimeModelMixin):
+class RealstateModel(IDModelMixin, DateTimeModelMixin, RealstateBaseModel):
     pass

@@ -15,20 +15,26 @@ from src.models.magazine import (
 def main(app):
     @app.get("/magazine", response_model=ListModel)
     async def magazines(page: int = Query(0, ge=0), page_size: int = 10):
-        cursor = (
-            app.db["magazines"]
-            .find()
-            .sort("_id", -1)
-            .skip(page * page_size)
-            .limit(page_size)
-        )
-        count = await app.db["magazines"].count_documents({})
-        data_list = []
+        pipeline = [
+            {"$sort": {"_id": -1}},
+            {
+                "$facet": {
+                    "data": [{"$skip": page * page_size}, {"$limit": page_size}],
+                    "info": [
+                        {"$count": "count"},
+                        {"$addFields": {"page": page}},
+                        {"$addFields": {"page_size": page_size}},
+                    ],
+                }
+            },
+            {"$unwind": "$info"},
+        ]
         #
-        async for magazine in cursor:
-            data_list.append(MagazineModel(**magazine))
-        #
-        return ListModel(page=page, count=count, data=data_list)
+        try:
+            result = await app.db["magazines"].aggregate(pipeline).next()
+        except StopAsyncIteration:
+            result = {"info": {"count": 0, "page": page, "page_size": page_size}}
+        return ListModel(**result)
 
     @app.get("/magazine/{magazine_id}", response_model=MagazineModel)
     async def get_magazine(magazine_id: str):

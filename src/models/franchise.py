@@ -1,8 +1,8 @@
-from pydantic import Field, HttpUrl
-from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from pydantic import Field, HttpUrl, BaseModel
+from src.core.model import IDModelMixin, DateTimeModelMixin
 
 
-class FranchiseBaseModel(CoreModel):
+class FranchiseBaseModel(BaseModel):
     thumbnail_url: HttpUrl = Field(...)
     external_url: HttpUrl = Field(...)
     store_count: int = Field(...)
@@ -10,13 +10,13 @@ class FranchiseBaseModel(CoreModel):
     starting_cost: int = Field(...)
 
 
-class CreateFranchiseModel(FranchiseBaseModel, IDModelMixin, DateTimeModelMixin):
+class CreateFranchiseModel(IDModelMixin, DateTimeModelMixin, FranchiseBaseModel):
     pass
 
 
-class UpdateFranchiseModel(FranchiseBaseModel, DateTimeModelMixin):
+class UpdateFranchiseModel(DateTimeModelMixin, FranchiseBaseModel):
     pass
 
 
-class FranchiseModel(FranchiseBaseModel, IDModelMixin, DateTimeModelMixin):
+class FranchiseModel(IDModelMixin, DateTimeModelMixin, FranchiseBaseModel):
     pass

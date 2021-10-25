@@ -1,19 +1,19 @@
-from pydantic import Field
-from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from pydantic import Field, BaseModel
+from src.core.model import IDModelMixin, DateTimeModelMixin
 
 
-class SMSBaseModel(CoreModel):
+class SMSBaseModel(BaseModel):
     reciever_phone_no: str = Field(...)
     content: str = Field(...)
 
 
-class SMSSendModel(SMSBaseModel, IDModelMixin, DateTimeModelMixin):
-    pass
-
-
-class SMSCountModel(CoreModel):
+class SMSCountModel(BaseModel):
     count: int = Field(...)
 
 
-class SMSModel(SMSBaseModel, IDModelMixin, DateTimeModelMixin):
+class SMSSendModel(IDModelMixin, DateTimeModelMixin, SMSBaseModel):
+    pass
+
+
+class SMSModel(IDModelMixin, DateTimeModelMixin, SMSBaseModel):
     pass

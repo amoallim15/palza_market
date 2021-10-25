@@ -1,21 +1,21 @@
-from pydantic import Field
-from src.core.model import CoreModel, IDModelMixin, DateTimeModelMixin
+from pydantic import Field, BaseModel
+from src.core.model import IDModelMixin, DateTimeModelMixin, PyObjectId
 
 
-class ReportBaseModel(CoreModel):
+class ReportBaseModel(BaseModel):
     content: str = Field(...)
 
 
-class CreateReportModel(ReportBaseModel, IDModelMixin, DateTimeModelMixin):
+class CreateReportModel(IDModelMixin, DateTimeModelMixin, ReportBaseModel):
     realstate_id: str = Field(...)
 
 
-class UpdateReportModel(ReportBaseModel, DateTimeModelMixin):
+class UpdateReportModel(DateTimeModelMixin, ReportBaseModel):
     pass
 
 
-class ReportModel(ReportBaseModel, IDModelMixin, DateTimeModelMixin):
-    user_id: str = Field(...)
-    realstate_id: str = Field(...)
+class ReportModel(IDModelMixin, DateTimeModelMixin, ReportBaseModel):
+    user_id: PyObjectId = Field(...)
+    realstate_id: PyObjectId = Field(...)
     user: dict = Field(...)
     realstate: dict = Field(...)
